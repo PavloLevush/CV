@@ -1,2 +1,2 @@
 # CV
-# All my projects
+All my projects

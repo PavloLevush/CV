@@ -1,0 +1,21 @@
+<Files "wp-login.php">
+AuthType Basic
+AuthName "User: word Password: word"
+AuthUserFile /etc/apache2/AUTH/word
+Require valid-user
+</Files>
+
+# BEGIN WordPress
+# Директиви (рядки) між `BEGIN WordPress` і `END WordPress`
+# створені автоматично і підлягають змінам тільки через фільтри WordPress.
+# Зміни зроблені вручну між цими маркерами будуть перезаписані.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /easy-travel.kl.com.ua/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /easy-travel.kl.com.ua/index.php [L]
+</IfModule>
+
+# END WordPress

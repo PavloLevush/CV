@@ -1,0 +1,1 @@
+'E:\Users\lesia\Desktop\Mesh_Flood_PSoC4BLE.cydsn\Generated_Source\PSoC4\CyBootAsmGnu.s' -o .o -T SOURCE_ASM__ARM_GCC_GENERIC -I 'E:\Users\lesia\Desktop\Mesh_Flood_PSoC4BLE.cydsn' -I 'E:\Users\lesia\Desktop\Mesh_Flood_PSoC4BLE.cydsn\Generated_Source\PSoC4' -f 'E:\Users\lesia\Desktop\Mesh_Flood_PSoC4BLE.cydsn\CortexM0\ARM_GCC_541\Debug\.deps\SOURCE_ASM__ARM_GCC_GENERIC.d'

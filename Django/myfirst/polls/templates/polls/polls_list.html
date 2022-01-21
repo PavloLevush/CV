@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title%}Vote{% endblock%}
+
+{% block nav %}
+	<a class="nav-link active" href="{% url 'polls:index'%}">Home</a>
+	<a class="nav-link" href="{% url 'polls:polls_list'%}">Votes list</a>
+{% endblock %}
+
+{% block content%}
+
+{% if latest_question_list %}
+
+    <div class="card text-dark" style='margin:auto;padding:auto;'>
+    <h5 class="card-header text-danger shadow">Останні голосування !!! </h5>
+    {% for question in latest_question_list %}
+        <div class="card-body shadow">
+            <h5 class="card-title color-dark">{{ question.question_text }}</h5>
+            <p class="text-muted text-left"><small>Опубліковано : {{question.pub_date}}
+            {% if question.was_published_recently %}
+                <em class='text-danger'>НОВЕ ОПИТУВАННЯ!!!</em>
+            {% endif %}
+            </small></p>
+            <p class="card-text">{{question.desp_text}}</p>
+            <a class='btn btn-primary' href="{% url 'polls:detail' question.id %}">Проголосуй</a>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="card text-dark">
+        <h5 class="card-header text-danger">Нові голосування</h5>
+            <div class="card-body">
+                <h5 class="card-title">Активних голосувань не знайдено</h5>
+            </div>
+    </div>
+{% endif %}
+
+{%endblock%}

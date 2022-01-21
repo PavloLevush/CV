@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+	<a class="nav-link" href="{% url 'polls:index'%}">Home</a>
+	<a class="nav-link active" href="{% url 'polls:polls_list'%}">Votes list</a>
+{% endblock %}
+
+{% block content%}
+
+{% if latest_question_list %}
+    <div class="list-group" style="height:350px;overflow:auto;">
+    {% for question in latest_question_list %}
+    <a href="{% url 'polls:detail' question.id %}" class="list-group-item list-group-item-action list-group-item-info">
+        <div class="d-flex w-100 justify-content-between">
+        {% if question.was_published_recently %}
+            <h5 class="mb-1 text-danger">{{ question.question_text }}</h5>
+        {% else %}
+            <h5 class="mb-1">{{ question.question_text }}</h5>
+        {% endif %}
+        <small>{{question.pub_date}}
+        </small>
+
+        </div>
+    </a>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+
+{% endblock %}

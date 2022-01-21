@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class='h-100'>
+<head>
+	<title>{% block title %}Vote{% endblock %}</title>
+	{% load static %}
+	<link rel="shortcut icon" type="image/png" href="{% static 'polls/Check-1.ico' %}"/>
+	{% comment %} <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}"> {% endcomment %}
+</head>
+<body class="d-flex h-100 text-center text-white"> 
+	<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+		<header class="mb-auto">
+			<div>
+			<h3 class="float-md-start mb-0 font-italic font-weight-bold">Vote</h3>
+			<nav class="nav nav-masthead justify-content-center float-md-end">
+				{% block nav %}
+				<a class="nav-link" href="{% url 'polls:index'%}">Home</a>
+				<a class="nav-link" href="{% url 'polls:polls_list'%}">Votes list</a>
+				{% endblock %}
+			</nav>
+			</div>
+		</header>
+	<main class='px-3'>	
+		{% block content %} {% endblock %}
+	</main> 
+	<footer class="mt-auto text-white-50">
+    	<p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>.</p>
+  	</footer>
+	</div>
+
+	{% comment %} <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> {% endcomment %}
+</body>
+</html>

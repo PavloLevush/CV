@@ -1,0 +1,1464 @@
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"WDT.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.comm	current_watchdog_counter,2,2
+  20              		.comm	speedLeft,4,4
+  21              		.comm	speedRight,4,4
+  22              		.section	.text.InitializeWatchdog,"ax",%progbits
+  23              		.align	2
+  24              		.global	InitializeWatchdog
+  25              		.code	16
+  26              		.thumb_func
+  27              		.type	InitializeWatchdog, %function
+  28              	InitializeWatchdog:
+  29              	.LFB35:
+  30              		.file 1 "WDT.c"
+   1:WDT.c         **** /*******************************************************************************
+   2:WDT.c         **** * File Name: WDT.c
+   3:WDT.c         **** *
+   4:WDT.c         **** * Version: 1.0
+   5:WDT.c         **** *
+   6:WDT.c         **** * Description:
+   7:WDT.c         **** * This file contains the functions to initialize Watchdog (WDT) counter and 
+   8:WDT.c         **** * record times for various timing operation in application.
+   9:WDT.c         **** *
+  10:WDT.c         **** ********************************************************************************
+  11:WDT.c         **** * Copyright 2015, Cypress Semiconductor Corporation.  All rights reserved.
+  12:WDT.c         **** * You may use this file only in accordance with the license, terms, conditions,
+  13:WDT.c         **** * disclaimers, and limitations in the end user license agreement accompanying
+  14:WDT.c         **** * the software package with which this file was provided.
+  15:WDT.c         **** *******************************************************************************/
+  16:WDT.c         **** #include <main.h>
+  17:WDT.c         **** 
+  18:WDT.c         **** extern uint8 ble_gap_state;
+  19:WDT.c         **** extern volatile uint16 RGBdataReceivedCounter;
+  20:WDT.c         **** extern uint8 switch_Role;
+  21:WDT.c         **** /*******************************************************************************
+  22:WDT.c         **** * Function Name: InitializeWatchdog
+  23:WDT.c         **** ********************************************************************************
+  24:WDT.c         **** * Summary:
+  25:WDT.c         **** *        Start watchdog timer with given period
+  26:WDT.c         **** *
+  27:WDT.c         **** * Parameters:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 2
+
+
+  28:WDT.c         **** *  void
+  29:WDT.c         **** *
+  30:WDT.c         **** * Return:
+  31:WDT.c         **** *  void
+  32:WDT.c         **** *
+  33:WDT.c         **** *******************************************************************************/
+  34:WDT.c         **** void InitializeWatchdog(uint32 match_val)
+  35:WDT.c         **** {
+  31              		.loc 1 35 0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 8
+  34              		@ frame_needed = 1, uses_anonymous_args = 0
+  35 0000 80B5     		push	{r7, lr}
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 7, -8
+  38              		.cfi_offset 14, -4
+  39 0002 82B0     		sub	sp, sp, #8
+  40              		.cfi_def_cfa_offset 16
+  41 0004 00AF     		add	r7, sp, #0
+  42              		.cfi_def_cfa_register 7
+  43 0006 7860     		str	r0, [r7, #4]
+  36:WDT.c         **** 	/* Unlock the WDT registers for modification */
+  37:WDT.c         **** 	CySysWdtUnlock(); 
+  44              		.loc 1 37 0
+  45 0008 FFF7FEFF 		bl	CySysWdtUnlock
+  38:WDT.c         **** 	
+  39:WDT.c         **** 	/* Write Mode for Counter 0 as Interrupt on Match */
+  40:WDT.c         ****     CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+  46              		.loc 1 40 0
+  47 000c 0121     		movs	r1, #1
+  48 000e 0020     		movs	r0, #0
+  49 0010 FFF7FEFF 		bl	CySysWdtSetMode
+  41:WDT.c         **** 	
+  42:WDT.c         **** 	/* Set Clear on Match for Counter 0*/
+  43:WDT.c         **** 	CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
+  50              		.loc 1 43 0
+  51 0014 0121     		movs	r1, #1
+  52 0016 0020     		movs	r0, #0
+  53 0018 FFF7FEFF 		bl	CySysWdtSetClearOnMatch
+  44:WDT.c         ****     
+  45:WDT.c         **** 	/* Write the match value equal to 1 second in Counter 0 */
+  46:WDT.c         **** 	CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, match_val);
+  54              		.loc 1 46 0
+  55 001c 7B68     		ldr	r3, [r7, #4]
+  56 001e 1900     		movs	r1, r3
+  57 0020 0020     		movs	r0, #0
+  58 0022 FFF7FEFF 		bl	CySysWdtSetMatch
+  47:WDT.c         ****     CyDelayUs(WATCHDOG_REG_UPDATE_WAIT_TIME);
+  59              		.loc 1 47 0
+  60 0026 5A20     		movs	r0, #90
+  61 0028 FFF7FEFF 		bl	CyDelayUs
+  48:WDT.c         **** 	
+  49:WDT.c         **** 	/* Enable Counter 0 */
+  50:WDT.c         ****     CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
+  62              		.loc 1 50 0
+  63 002c 0120     		movs	r0, #1
+  64 002e FFF7FEFF 		bl	CySysWdtEnable
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 3
+
+
+  51:WDT.c         **** 	
+  52:WDT.c         **** 	/* Lock Watchdog to prevent further changes */
+  53:WDT.c         ****     CySysWdtLock();
+  65              		.loc 1 53 0
+  66 0032 FFF7FEFF 		bl	CySysWdtLock
+  54:WDT.c         **** 	
+  55:WDT.c         **** 	isr_WDT_StartEx(WDT_INT_Handler);
+  67              		.loc 1 55 0
+  68 0036 044B     		ldr	r3, .L2
+  69 0038 1800     		movs	r0, r3
+  70 003a FFF7FEFF 		bl	isr_WDT_StartEx
+  56:WDT.c         **** }
+  71              		.loc 1 56 0
+  72 003e C046     		nop
+  73 0040 BD46     		mov	sp, r7
+  74 0042 02B0     		add	sp, sp, #8
+  75              		@ sp needed
+  76 0044 80BD     		pop	{r7, pc}
+  77              	.L3:
+  78 0046 C046     		.align	2
+  79              	.L2:
+  80 0048 00000000 		.word	WDT_INT_Handler
+  81              		.cfi_endproc
+  82              	.LFE35:
+  83              		.size	InitializeWatchdog, .-InitializeWatchdog
+  84              		.section	.text.WDT_INT_Handler,"ax",%progbits
+  85              		.align	2
+  86              		.global	WDT_INT_Handler
+  87              		.code	16
+  88              		.thumb_func
+  89              		.type	WDT_INT_Handler, %function
+  90              	WDT_INT_Handler:
+  91              	.LFB36:
+  57:WDT.c         **** 
+  58:WDT.c         **** /*******************************************************************************
+  59:WDT.c         **** * Function Name: WDT_INT_Handler
+  60:WDT.c         **** ********************************************************************************
+  61:WDT.c         **** * Summary:
+  62:WDT.c         **** *        Watchdog interrupt routine for counting operation
+  63:WDT.c         **** *
+  64:WDT.c         **** * Parameters:
+  65:WDT.c         **** *  void
+  66:WDT.c         **** *
+  67:WDT.c         **** * Return:
+  68:WDT.c         **** *  void
+  69:WDT.c         **** *
+  70:WDT.c         **** *******************************************************************************/
+  71:WDT.c         **** void WDT_INT_Handler(void)
+  72:WDT.c         **** {
+  92              		.loc 1 72 0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 1, uses_anonymous_args = 0
+  96 0000 80B5     		push	{r7, lr}
+  97              		.cfi_def_cfa_offset 8
+  98              		.cfi_offset 7, -8
+  99              		.cfi_offset 14, -4
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 4
+
+
+ 100 0002 00AF     		add	r7, sp, #0
+ 101              		.cfi_def_cfa_register 7
+  73:WDT.c         **** 	/* Clear Pending Interrupt */
+  74:WDT.c         **** 	isr_WDT_ClearPending();
+ 102              		.loc 1 74 0
+ 103 0004 FFF7FEFF 		bl	isr_WDT_ClearPending
+  75:WDT.c         **** 	
+  76:WDT.c         **** 	/* If the Interrupt source is Counter 0 match, then process */
+  77:WDT.c         **** 	if(CySysWdtGetInterruptSource() & CY_SYS_WDT_COUNTER0_INT)
+ 104              		.loc 1 77 0
+ 105 0008 FFF7FEFF 		bl	CySysWdtGetInterruptSource
+ 106 000c 0200     		movs	r2, r0
+ 107 000e 0423     		movs	r3, #4
+ 108 0010 1340     		ands	r3, r2
+ 109 0012 09D0     		beq	.L6
+  78:WDT.c         **** 	{
+  79:WDT.c         **** 		/* Clear Watchdog Interrupt from Counter 0 */
+  80:WDT.c         **** 		CySysWdtClearInterrupt(CY_SYS_WDT_COUNTER0_INT);
+ 110              		.loc 1 80 0
+ 111 0014 0420     		movs	r0, #4
+ 112 0016 FFF7FEFF 		bl	CySysWdtClearInterrupt
+  81:WDT.c         **** 		
+  82:WDT.c         **** 		/* Increment global counter variable */
+  83:WDT.c         **** 		current_watchdog_counter++;
+ 113              		.loc 1 83 0
+ 114 001a 054B     		ldr	r3, .L7
+ 115 001c 1B88     		ldrh	r3, [r3]
+ 116 001e 9BB2     		uxth	r3, r3
+ 117 0020 0133     		adds	r3, r3, #1
+ 118 0022 9AB2     		uxth	r2, r3
+ 119 0024 024B     		ldr	r3, .L7
+ 120 0026 1A80     		strh	r2, [r3]
+ 121              	.L6:
+  84:WDT.c         **** 	}
+  85:WDT.c         **** }
+ 122              		.loc 1 85 0
+ 123 0028 C046     		nop
+ 124 002a BD46     		mov	sp, r7
+ 125              		@ sp needed
+ 126 002c 80BD     		pop	{r7, pc}
+ 127              	.L8:
+ 128 002e C046     		.align	2
+ 129              	.L7:
+ 130 0030 00000000 		.word	current_watchdog_counter
+ 131              		.cfi_endproc
+ 132              	.LFE36:
+ 133              		.size	WDT_INT_Handler, .-WDT_INT_Handler
+ 134              		.text
+ 135              	.Letext0:
+ 136              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 137              		.file 3 "Generated_Source\\PSoC4/BLE_Stack.h"
+ 138              		.file 4 "Generated_Source\\PSoC4/BLE_eventHandler.h"
+ 139              		.file 5 "./main.h"
+ 140              		.section	.debug_info,"",%progbits
+ 141              	.Ldebug_info0:
+ 142 0000 FF020000 		.4byte	0x2ff
+ 143 0004 0400     		.2byte	0x4
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 5
+
+
+ 144 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 145 000a 04       		.byte	0x4
+ 146 000b 01       		.uleb128 0x1
+ 147 000c 4B040000 		.4byte	.LASF96
+ 148 0010 0C       		.byte	0xc
+ 149 0011 24010000 		.4byte	.LASF97
+ 150 0015 99050000 		.4byte	.LASF98
+ 151 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 152 001d 00000000 		.4byte	0
+ 153 0021 00000000 		.4byte	.Ldebug_line0
+ 154 0025 02       		.uleb128 0x2
+ 155 0026 01       		.byte	0x1
+ 156 0027 06       		.byte	0x6
+ 157 0028 E8050000 		.4byte	.LASF0
+ 158 002c 02       		.uleb128 0x2
+ 159 002d 01       		.byte	0x1
+ 160 002e 08       		.byte	0x8
+ 161 002f 4D050000 		.4byte	.LASF1
+ 162 0033 02       		.uleb128 0x2
+ 163 0034 02       		.byte	0x2
+ 164 0035 05       		.byte	0x5
+ 165 0036 86000000 		.4byte	.LASF2
+ 166 003a 02       		.uleb128 0x2
+ 167 003b 02       		.byte	0x2
+ 168 003c 07       		.byte	0x7
+ 169 003d 1B070000 		.4byte	.LASF3
+ 170 0041 02       		.uleb128 0x2
+ 171 0042 04       		.byte	0x4
+ 172 0043 05       		.byte	0x5
+ 173 0044 78030000 		.4byte	.LASF4
+ 174 0048 02       		.uleb128 0x2
+ 175 0049 04       		.byte	0x4
+ 176 004a 07       		.byte	0x7
+ 177 004b 79060000 		.4byte	.LASF5
+ 178 004f 02       		.uleb128 0x2
+ 179 0050 08       		.byte	0x8
+ 180 0051 05       		.byte	0x5
+ 181 0052 2A010000 		.4byte	.LASF6
+ 182 0056 02       		.uleb128 0x2
+ 183 0057 08       		.byte	0x8
+ 184 0058 07       		.byte	0x7
+ 185 0059 27030000 		.4byte	.LASF7
+ 186 005d 03       		.uleb128 0x3
+ 187 005e 04       		.byte	0x4
+ 188 005f 05       		.byte	0x5
+ 189 0060 696E7400 		.ascii	"int\000"
+ 190 0064 02       		.uleb128 0x2
+ 191 0065 04       		.byte	0x4
+ 192 0066 07       		.byte	0x7
+ 193 0067 51060000 		.4byte	.LASF8
+ 194 006b 04       		.uleb128 0x4
+ 195 006c EC010000 		.4byte	.LASF9
+ 196 0070 02       		.byte	0x2
+ 197 0071 FD01     		.2byte	0x1fd
+ 198 0073 3A000000 		.4byte	0x3a
+ 199 0077 04       		.uleb128 0x4
+ 200 0078 03080000 		.4byte	.LASF10
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 6
+
+
+ 201 007c 02       		.byte	0x2
+ 202 007d FE01     		.2byte	0x1fe
+ 203 007f 48000000 		.4byte	0x48
+ 204 0083 02       		.uleb128 0x2
+ 205 0084 04       		.byte	0x4
+ 206 0085 04       		.byte	0x4
+ 207 0086 BE020000 		.4byte	.LASF11
+ 208 008a 02       		.uleb128 0x2
+ 209 008b 08       		.byte	0x8
+ 210 008c 04       		.byte	0x4
+ 211 008d 4B080000 		.4byte	.LASF12
+ 212 0091 02       		.uleb128 0x2
+ 213 0092 01       		.byte	0x1
+ 214 0093 08       		.byte	0x8
+ 215 0094 96070000 		.4byte	.LASF13
+ 216 0098 05       		.uleb128 0x5
+ 217 0099 6B000000 		.4byte	0x6b
+ 218 009d 02       		.uleb128 0x2
+ 219 009e 08       		.byte	0x8
+ 220 009f 04       		.byte	0x4
+ 221 00a0 1B050000 		.4byte	.LASF14
+ 222 00a4 02       		.uleb128 0x2
+ 223 00a5 04       		.byte	0x4
+ 224 00a6 07       		.byte	0x7
+ 225 00a7 DB000000 		.4byte	.LASF15
+ 226 00ab 06       		.uleb128 0x6
+ 227 00ac 01       		.byte	0x1
+ 228 00ad 2C000000 		.4byte	0x2c
+ 229 00b1 03       		.byte	0x3
+ 230 00b2 3501     		.2byte	0x135
+ 231 00b4 69020000 		.4byte	0x269
+ 232 00b8 07       		.uleb128 0x7
+ 233 00b9 57020000 		.4byte	.LASF16
+ 234 00bd 00       		.byte	0
+ 235 00be 07       		.uleb128 0x7
+ 236 00bf 86010000 		.4byte	.LASF17
+ 237 00c3 01       		.byte	0x1
+ 238 00c4 07       		.uleb128 0x7
+ 239 00c5 A9090000 		.4byte	.LASF18
+ 240 00c9 02       		.byte	0x2
+ 241 00ca 07       		.uleb128 0x7
+ 242 00cb BA080000 		.4byte	.LASF19
+ 243 00cf 03       		.byte	0x3
+ 244 00d0 07       		.uleb128 0x7
+ 245 00d1 0F010000 		.4byte	.LASF20
+ 246 00d5 04       		.byte	0x4
+ 247 00d6 07       		.uleb128 0x7
+ 248 00d7 09040000 		.4byte	.LASF21
+ 249 00db 05       		.byte	0x5
+ 250 00dc 07       		.uleb128 0x7
+ 251 00dd 2F000000 		.4byte	.LASF22
+ 252 00e1 06       		.byte	0x6
+ 253 00e2 07       		.uleb128 0x7
+ 254 00e3 18090000 		.4byte	.LASF23
+ 255 00e7 20       		.byte	0x20
+ 256 00e8 07       		.uleb128 0x7
+ 257 00e9 8B060000 		.4byte	.LASF24
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 7
+
+
+ 258 00ed 21       		.byte	0x21
+ 259 00ee 07       		.uleb128 0x7
+ 260 00ef 00000000 		.4byte	.LASF25
+ 261 00f3 22       		.byte	0x22
+ 262 00f4 07       		.uleb128 0x7
+ 263 00f5 25040000 		.4byte	.LASF26
+ 264 00f9 23       		.byte	0x23
+ 265 00fa 07       		.uleb128 0x7
+ 266 00fb 35060000 		.4byte	.LASF27
+ 267 00ff 24       		.byte	0x24
+ 268 0100 07       		.uleb128 0x7
+ 269 0101 90000000 		.4byte	.LASF28
+ 270 0105 25       		.byte	0x25
+ 271 0106 07       		.uleb128 0x7
+ 272 0107 92080000 		.4byte	.LASF29
+ 273 010b 26       		.byte	0x26
+ 274 010c 07       		.uleb128 0x7
+ 275 010d B2030000 		.4byte	.LASF30
+ 276 0111 27       		.byte	0x27
+ 277 0112 07       		.uleb128 0x7
+ 278 0113 760A0000 		.4byte	.LASF31
+ 279 0117 28       		.byte	0x28
+ 280 0118 07       		.uleb128 0x7
+ 281 0119 C3060000 		.4byte	.LASF32
+ 282 011d 29       		.byte	0x29
+ 283 011e 07       		.uleb128 0x7
+ 284 011f 46070000 		.4byte	.LASF33
+ 285 0123 2A       		.byte	0x2a
+ 286 0124 07       		.uleb128 0x7
+ 287 0125 DF090000 		.4byte	.LASF34
+ 288 0129 2B       		.byte	0x2b
+ 289 012a 07       		.uleb128 0x7
+ 290 012b F3010000 		.4byte	.LASF35
+ 291 012f 2C       		.byte	0x2c
+ 292 0130 07       		.uleb128 0x7
+ 293 0131 DD020000 		.4byte	.LASF36
+ 294 0135 2D       		.byte	0x2d
+ 295 0136 07       		.uleb128 0x7
+ 296 0137 62000000 		.4byte	.LASF37
+ 297 013b 2E       		.byte	0x2e
+ 298 013c 07       		.uleb128 0x7
+ 299 013d DE0A0000 		.4byte	.LASF38
+ 300 0141 2F       		.byte	0x2f
+ 301 0142 07       		.uleb128 0x7
+ 302 0143 EE000000 		.4byte	.LASF39
+ 303 0147 30       		.byte	0x30
+ 304 0148 07       		.uleb128 0x7
+ 305 0149 F7040000 		.4byte	.LASF40
+ 306 014d 31       		.byte	0x31
+ 307 014e 07       		.uleb128 0x7
+ 308 014f 06030000 		.4byte	.LASF41
+ 309 0153 32       		.byte	0x32
+ 310 0154 07       		.uleb128 0x7
+ 311 0155 6F070000 		.4byte	.LASF42
+ 312 0159 33       		.byte	0x33
+ 313 015a 07       		.uleb128 0x7
+ 314 015b E0060000 		.4byte	.LASF43
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 8
+
+
+ 315 015f 34       		.byte	0x34
+ 316 0160 07       		.uleb128 0x7
+ 317 0161 75080000 		.4byte	.LASF44
+ 318 0165 35       		.byte	0x35
+ 319 0166 07       		.uleb128 0x7
+ 320 0167 3E030000 		.4byte	.LASF45
+ 321 016b 36       		.byte	0x36
+ 322 016c 07       		.uleb128 0x7
+ 323 016d 99010000 		.4byte	.LASF46
+ 324 0171 37       		.byte	0x37
+ 325 0172 07       		.uleb128 0x7
+ 326 0173 48000000 		.4byte	.LASF47
+ 327 0177 40       		.byte	0x40
+ 328 0178 07       		.uleb128 0x7
+ 329 0179 5E060000 		.4byte	.LASF48
+ 330 017d 41       		.byte	0x41
+ 331 017e 07       		.uleb128 0x7
+ 332 017f AA000000 		.4byte	.LASF49
+ 333 0183 42       		.byte	0x42
+ 334 0184 07       		.uleb128 0x7
+ 335 0185 CE010000 		.4byte	.LASF50
+ 336 0189 43       		.byte	0x43
+ 337 018a 07       		.uleb128 0x7
+ 338 018b 81090000 		.4byte	.LASF51
+ 339 018f 44       		.byte	0x44
+ 340 0190 07       		.uleb128 0x7
+ 341 0191 3C090000 		.4byte	.LASF52
+ 342 0195 45       		.byte	0x45
+ 343 0196 07       		.uleb128 0x7
+ 344 0197 65010000 		.4byte	.LASF53
+ 345 019b 46       		.byte	0x46
+ 346 019c 07       		.uleb128 0x7
+ 347 019d CA050000 		.4byte	.LASF54
+ 348 01a1 47       		.byte	0x47
+ 349 01a2 07       		.uleb128 0x7
+ 350 01a3 0E060000 		.4byte	.LASF55
+ 351 01a7 48       		.byte	0x48
+ 352 01a8 07       		.uleb128 0x7
+ 353 01a9 C4020000 		.4byte	.LASF56
+ 354 01ad 49       		.byte	0x49
+ 355 01ae 07       		.uleb128 0x7
+ 356 01af B7070000 		.4byte	.LASF57
+ 357 01b3 4A       		.byte	0x4a
+ 358 01b4 07       		.uleb128 0x7
+ 359 01b5 17020000 		.4byte	.LASF58
+ 360 01b9 4B       		.byte	0x4b
+ 361 01ba 07       		.uleb128 0x7
+ 362 01bb F4050000 		.4byte	.LASF59
+ 363 01bf 4C       		.byte	0x4c
+ 364 01c0 07       		.uleb128 0x7
+ 365 01c1 4B010000 		.4byte	.LASF60
+ 366 01c5 4D       		.byte	0x4d
+ 367 01c6 07       		.uleb128 0x7
+ 368 01c7 63090000 		.4byte	.LASF61
+ 369 01cb 4E       		.byte	0x4e
+ 370 01cc 07       		.uleb128 0x7
+ 371 01cd 5B050000 		.4byte	.LASF62
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 9
+
+
+ 372 01d1 4F       		.byte	0x4f
+ 373 01d2 07       		.uleb128 0x7
+ 374 01d3 570A0000 		.4byte	.LASF63
+ 375 01d7 50       		.byte	0x50
+ 376 01d8 07       		.uleb128 0x7
+ 377 01d9 E4070000 		.4byte	.LASF64
+ 378 01dd 51       		.byte	0x51
+ 379 01de 07       		.uleb128 0x7
+ 380 01df E8030000 		.4byte	.LASF65
+ 381 01e3 52       		.byte	0x52
+ 382 01e4 07       		.uleb128 0x7
+ 383 01e5 81030000 		.4byte	.LASF66
+ 384 01e9 53       		.byte	0x53
+ 385 01ea 07       		.uleb128 0x7
+ 386 01eb 36020000 		.4byte	.LASF67
+ 387 01ef 54       		.byte	0x54
+ 388 01f0 07       		.uleb128 0x7
+ 389 01f1 A80A0000 		.4byte	.LASF68
+ 390 01f5 55       		.byte	0x55
+ 391 01f6 07       		.uleb128 0x7
+ 392 01f7 350A0000 		.4byte	.LASF69
+ 393 01fb 56       		.byte	0x56
+ 394 01fc 07       		.uleb128 0x7
+ 395 01fd 0C0A0000 		.4byte	.LASF70
+ 396 0201 57       		.byte	0x57
+ 397 0202 07       		.uleb128 0x7
+ 398 0203 F8060000 		.4byte	.LASF71
+ 399 0207 58       		.byte	0x58
+ 400 0208 07       		.uleb128 0x7
+ 401 0209 27050000 		.4byte	.LASF72
+ 402 020d 70       		.byte	0x70
+ 403 020e 07       		.uleb128 0x7
+ 404 020f F2080000 		.4byte	.LASF73
+ 405 0213 71       		.byte	0x71
+ 406 0214 07       		.uleb128 0x7
+ 407 0215 9B070000 		.4byte	.LASF74
+ 408 0219 72       		.byte	0x72
+ 409 021a 07       		.uleb128 0x7
+ 410 021b 7F020000 		.4byte	.LASF75
+ 411 021f 73       		.byte	0x73
+ 412 0220 07       		.uleb128 0x7
+ 413 0221 D9040000 		.4byte	.LASF76
+ 414 0225 74       		.byte	0x74
+ 415 0226 07       		.uleb128 0x7
+ 416 0227 A2060000 		.4byte	.LASF77
+ 417 022b 75       		.byte	0x75
+ 418 022c 07       		.uleb128 0x7
+ 419 022d 9D020000 		.4byte	.LASF78
+ 420 0231 76       		.byte	0x76
+ 421 0232 07       		.uleb128 0x7
+ 422 0233 D3080000 		.4byte	.LASF79
+ 423 0237 77       		.byte	0x77
+ 424 0238 07       		.uleb128 0x7
+ 425 0239 28080000 		.4byte	.LASF80
+ 426 023d 78       		.byte	0x78
+ 427 023e 07       		.uleb128 0x7
+ 428 023f 52080000 		.4byte	.LASF81
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 10
+
+
+ 429 0243 79       		.byte	0x79
+ 430 0244 07       		.uleb128 0x7
+ 431 0245 BB090000 		.4byte	.LASF82
+ 432 0249 7A       		.byte	0x7a
+ 433 024a 07       		.uleb128 0x7
+ 434 024b 0A080000 		.4byte	.LASF83
+ 435 024f FA       		.byte	0xfa
+ 436 0250 07       		.uleb128 0x7
+ 437 0251 7A050000 		.4byte	.LASF84
+ 438 0255 FB       		.byte	0xfb
+ 439 0256 07       		.uleb128 0x7
+ 440 0257 CC0A0000 		.4byte	.LASF85
+ 441 025b FC       		.byte	0xfc
+ 442 025c 07       		.uleb128 0x7
+ 443 025d 2E070000 		.4byte	.LASF86
+ 444 0261 FD       		.byte	0xfd
+ 445 0262 07       		.uleb128 0x7
+ 446 0263 FE090000 		.4byte	.LASF87
+ 447 0267 FF       		.byte	0xff
+ 448 0268 00       		.byte	0
+ 449 0269 06       		.uleb128 0x6
+ 450 026a 01       		.byte	0x1
+ 451 026b 2C000000 		.4byte	0x2c
+ 452 026f 04       		.byte	0x4
+ 453 0270 EB08     		.2byte	0x8eb
+ 454 0272 95020000 		.4byte	0x295
+ 455 0276 07       		.uleb128 0x7
+ 456 0277 D5070000 		.4byte	.LASF88
+ 457 027b 00       		.byte	0
+ 458 027c 07       		.uleb128 0x7
+ 459 027d A2030000 		.4byte	.LASF89
+ 460 0281 01       		.byte	0x1
+ 461 0282 07       		.uleb128 0x7
+ 462 0283 C8000000 		.4byte	.LASF90
+ 463 0287 02       		.byte	0x2
+ 464 0288 07       		.uleb128 0x7
+ 465 0289 D1030000 		.4byte	.LASF91
+ 466 028d 02       		.byte	0x2
+ 467 028e 07       		.uleb128 0x7
+ 468 028f 6E020000 		.4byte	.LASF92
+ 469 0293 03       		.byte	0x3
+ 470 0294 00       		.byte	0
+ 471 0295 08       		.uleb128 0x8
+ 472 0296 38010000 		.4byte	.LASF99
+ 473 029a 01       		.byte	0x1
+ 474 029b 22       		.byte	0x22
+ 475 029c 00000000 		.4byte	.LFB35
+ 476 02a0 4C000000 		.4byte	.LFE35-.LFB35
+ 477 02a4 01       		.uleb128 0x1
+ 478 02a5 9C       		.byte	0x9c
+ 479 02a6 B9020000 		.4byte	0x2b9
+ 480 02aa 09       		.uleb128 0x9
+ 481 02ab 9F090000 		.4byte	.LASF100
+ 482 02af 01       		.byte	0x1
+ 483 02b0 22       		.byte	0x22
+ 484 02b1 77000000 		.4byte	0x77
+ 485 02b5 02       		.uleb128 0x2
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 11
+
+
+ 486 02b6 91       		.byte	0x91
+ 487 02b7 74       		.sleb128 -12
+ 488 02b8 00       		.byte	0
+ 489 02b9 0A       		.uleb128 0xa
+ 490 02ba 980A0000 		.4byte	.LASF101
+ 491 02be 01       		.byte	0x1
+ 492 02bf 47       		.byte	0x47
+ 493 02c0 00000000 		.4byte	.LFB36
+ 494 02c4 34000000 		.4byte	.LFE36-.LFB36
+ 495 02c8 01       		.uleb128 0x1
+ 496 02c9 9C       		.byte	0x9c
+ 497 02ca 0B       		.uleb128 0xb
+ 498 02cb 5F030000 		.4byte	.LASF93
+ 499 02cf 05       		.byte	0x5
+ 500 02d0 22       		.byte	0x22
+ 501 02d1 98000000 		.4byte	0x98
+ 502 02d5 05       		.uleb128 0x5
+ 503 02d6 03       		.byte	0x3
+ 504 02d7 00000000 		.4byte	current_watchdog_counter
+ 505 02db 0B       		.uleb128 0xb
+ 506 02dc E4000000 		.4byte	.LASF94
+ 507 02e0 05       		.byte	0x5
+ 508 02e1 23       		.byte	0x23
+ 509 02e2 EC020000 		.4byte	0x2ec
+ 510 02e6 05       		.uleb128 0x5
+ 511 02e7 03       		.byte	0x3
+ 512 02e8 00000000 		.4byte	speedLeft
+ 513 02ec 05       		.uleb128 0x5
+ 514 02ed 5D000000 		.4byte	0x5d
+ 515 02f1 0B       		.uleb128 0xb
+ 516 02f2 24000000 		.4byte	.LASF95
+ 517 02f6 05       		.byte	0x5
+ 518 02f7 24       		.byte	0x24
+ 519 02f8 EC020000 		.4byte	0x2ec
+ 520 02fc 05       		.uleb128 0x5
+ 521 02fd 03       		.byte	0x3
+ 522 02fe 00000000 		.4byte	speedRight
+ 523 0302 00       		.byte	0
+ 524              		.section	.debug_abbrev,"",%progbits
+ 525              	.Ldebug_abbrev0:
+ 526 0000 01       		.uleb128 0x1
+ 527 0001 11       		.uleb128 0x11
+ 528 0002 01       		.byte	0x1
+ 529 0003 25       		.uleb128 0x25
+ 530 0004 0E       		.uleb128 0xe
+ 531 0005 13       		.uleb128 0x13
+ 532 0006 0B       		.uleb128 0xb
+ 533 0007 03       		.uleb128 0x3
+ 534 0008 0E       		.uleb128 0xe
+ 535 0009 1B       		.uleb128 0x1b
+ 536 000a 0E       		.uleb128 0xe
+ 537 000b 55       		.uleb128 0x55
+ 538 000c 17       		.uleb128 0x17
+ 539 000d 11       		.uleb128 0x11
+ 540 000e 01       		.uleb128 0x1
+ 541 000f 10       		.uleb128 0x10
+ 542 0010 17       		.uleb128 0x17
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 12
+
+
+ 543 0011 00       		.byte	0
+ 544 0012 00       		.byte	0
+ 545 0013 02       		.uleb128 0x2
+ 546 0014 24       		.uleb128 0x24
+ 547 0015 00       		.byte	0
+ 548 0016 0B       		.uleb128 0xb
+ 549 0017 0B       		.uleb128 0xb
+ 550 0018 3E       		.uleb128 0x3e
+ 551 0019 0B       		.uleb128 0xb
+ 552 001a 03       		.uleb128 0x3
+ 553 001b 0E       		.uleb128 0xe
+ 554 001c 00       		.byte	0
+ 555 001d 00       		.byte	0
+ 556 001e 03       		.uleb128 0x3
+ 557 001f 24       		.uleb128 0x24
+ 558 0020 00       		.byte	0
+ 559 0021 0B       		.uleb128 0xb
+ 560 0022 0B       		.uleb128 0xb
+ 561 0023 3E       		.uleb128 0x3e
+ 562 0024 0B       		.uleb128 0xb
+ 563 0025 03       		.uleb128 0x3
+ 564 0026 08       		.uleb128 0x8
+ 565 0027 00       		.byte	0
+ 566 0028 00       		.byte	0
+ 567 0029 04       		.uleb128 0x4
+ 568 002a 16       		.uleb128 0x16
+ 569 002b 00       		.byte	0
+ 570 002c 03       		.uleb128 0x3
+ 571 002d 0E       		.uleb128 0xe
+ 572 002e 3A       		.uleb128 0x3a
+ 573 002f 0B       		.uleb128 0xb
+ 574 0030 3B       		.uleb128 0x3b
+ 575 0031 05       		.uleb128 0x5
+ 576 0032 49       		.uleb128 0x49
+ 577 0033 13       		.uleb128 0x13
+ 578 0034 00       		.byte	0
+ 579 0035 00       		.byte	0
+ 580 0036 05       		.uleb128 0x5
+ 581 0037 35       		.uleb128 0x35
+ 582 0038 00       		.byte	0
+ 583 0039 49       		.uleb128 0x49
+ 584 003a 13       		.uleb128 0x13
+ 585 003b 00       		.byte	0
+ 586 003c 00       		.byte	0
+ 587 003d 06       		.uleb128 0x6
+ 588 003e 04       		.uleb128 0x4
+ 589 003f 01       		.byte	0x1
+ 590 0040 0B       		.uleb128 0xb
+ 591 0041 0B       		.uleb128 0xb
+ 592 0042 49       		.uleb128 0x49
+ 593 0043 13       		.uleb128 0x13
+ 594 0044 3A       		.uleb128 0x3a
+ 595 0045 0B       		.uleb128 0xb
+ 596 0046 3B       		.uleb128 0x3b
+ 597 0047 05       		.uleb128 0x5
+ 598 0048 01       		.uleb128 0x1
+ 599 0049 13       		.uleb128 0x13
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 13
+
+
+ 600 004a 00       		.byte	0
+ 601 004b 00       		.byte	0
+ 602 004c 07       		.uleb128 0x7
+ 603 004d 28       		.uleb128 0x28
+ 604 004e 00       		.byte	0
+ 605 004f 03       		.uleb128 0x3
+ 606 0050 0E       		.uleb128 0xe
+ 607 0051 1C       		.uleb128 0x1c
+ 608 0052 0B       		.uleb128 0xb
+ 609 0053 00       		.byte	0
+ 610 0054 00       		.byte	0
+ 611 0055 08       		.uleb128 0x8
+ 612 0056 2E       		.uleb128 0x2e
+ 613 0057 01       		.byte	0x1
+ 614 0058 3F       		.uleb128 0x3f
+ 615 0059 19       		.uleb128 0x19
+ 616 005a 03       		.uleb128 0x3
+ 617 005b 0E       		.uleb128 0xe
+ 618 005c 3A       		.uleb128 0x3a
+ 619 005d 0B       		.uleb128 0xb
+ 620 005e 3B       		.uleb128 0x3b
+ 621 005f 0B       		.uleb128 0xb
+ 622 0060 27       		.uleb128 0x27
+ 623 0061 19       		.uleb128 0x19
+ 624 0062 11       		.uleb128 0x11
+ 625 0063 01       		.uleb128 0x1
+ 626 0064 12       		.uleb128 0x12
+ 627 0065 06       		.uleb128 0x6
+ 628 0066 40       		.uleb128 0x40
+ 629 0067 18       		.uleb128 0x18
+ 630 0068 9642     		.uleb128 0x2116
+ 631 006a 19       		.uleb128 0x19
+ 632 006b 01       		.uleb128 0x1
+ 633 006c 13       		.uleb128 0x13
+ 634 006d 00       		.byte	0
+ 635 006e 00       		.byte	0
+ 636 006f 09       		.uleb128 0x9
+ 637 0070 05       		.uleb128 0x5
+ 638 0071 00       		.byte	0
+ 639 0072 03       		.uleb128 0x3
+ 640 0073 0E       		.uleb128 0xe
+ 641 0074 3A       		.uleb128 0x3a
+ 642 0075 0B       		.uleb128 0xb
+ 643 0076 3B       		.uleb128 0x3b
+ 644 0077 0B       		.uleb128 0xb
+ 645 0078 49       		.uleb128 0x49
+ 646 0079 13       		.uleb128 0x13
+ 647 007a 02       		.uleb128 0x2
+ 648 007b 18       		.uleb128 0x18
+ 649 007c 00       		.byte	0
+ 650 007d 00       		.byte	0
+ 651 007e 0A       		.uleb128 0xa
+ 652 007f 2E       		.uleb128 0x2e
+ 653 0080 00       		.byte	0
+ 654 0081 3F       		.uleb128 0x3f
+ 655 0082 19       		.uleb128 0x19
+ 656 0083 03       		.uleb128 0x3
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 14
+
+
+ 657 0084 0E       		.uleb128 0xe
+ 658 0085 3A       		.uleb128 0x3a
+ 659 0086 0B       		.uleb128 0xb
+ 660 0087 3B       		.uleb128 0x3b
+ 661 0088 0B       		.uleb128 0xb
+ 662 0089 27       		.uleb128 0x27
+ 663 008a 19       		.uleb128 0x19
+ 664 008b 11       		.uleb128 0x11
+ 665 008c 01       		.uleb128 0x1
+ 666 008d 12       		.uleb128 0x12
+ 667 008e 06       		.uleb128 0x6
+ 668 008f 40       		.uleb128 0x40
+ 669 0090 18       		.uleb128 0x18
+ 670 0091 9642     		.uleb128 0x2116
+ 671 0093 19       		.uleb128 0x19
+ 672 0094 00       		.byte	0
+ 673 0095 00       		.byte	0
+ 674 0096 0B       		.uleb128 0xb
+ 675 0097 34       		.uleb128 0x34
+ 676 0098 00       		.byte	0
+ 677 0099 03       		.uleb128 0x3
+ 678 009a 0E       		.uleb128 0xe
+ 679 009b 3A       		.uleb128 0x3a
+ 680 009c 0B       		.uleb128 0xb
+ 681 009d 3B       		.uleb128 0x3b
+ 682 009e 0B       		.uleb128 0xb
+ 683 009f 49       		.uleb128 0x49
+ 684 00a0 13       		.uleb128 0x13
+ 685 00a1 3F       		.uleb128 0x3f
+ 686 00a2 19       		.uleb128 0x19
+ 687 00a3 02       		.uleb128 0x2
+ 688 00a4 18       		.uleb128 0x18
+ 689 00a5 00       		.byte	0
+ 690 00a6 00       		.byte	0
+ 691 00a7 00       		.byte	0
+ 692              		.section	.debug_aranges,"",%progbits
+ 693 0000 24000000 		.4byte	0x24
+ 694 0004 0200     		.2byte	0x2
+ 695 0006 00000000 		.4byte	.Ldebug_info0
+ 696 000a 04       		.byte	0x4
+ 697 000b 00       		.byte	0
+ 698 000c 0000     		.2byte	0
+ 699 000e 0000     		.2byte	0
+ 700 0010 00000000 		.4byte	.LFB35
+ 701 0014 4C000000 		.4byte	.LFE35-.LFB35
+ 702 0018 00000000 		.4byte	.LFB36
+ 703 001c 34000000 		.4byte	.LFE36-.LFB36
+ 704 0020 00000000 		.4byte	0
+ 705 0024 00000000 		.4byte	0
+ 706              		.section	.debug_ranges,"",%progbits
+ 707              	.Ldebug_ranges0:
+ 708 0000 00000000 		.4byte	.LFB35
+ 709 0004 4C000000 		.4byte	.LFE35
+ 710 0008 00000000 		.4byte	.LFB36
+ 711 000c 34000000 		.4byte	.LFE36
+ 712 0010 00000000 		.4byte	0
+ 713 0014 00000000 		.4byte	0
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 15
+
+
+ 714              		.section	.debug_line,"",%progbits
+ 715              	.Ldebug_line0:
+ 716 0000 A4000000 		.section	.debug_str,"MS",%progbits,1
+ 716      02007100 
+ 716      00000201 
+ 716      FB0E0D00 
+ 716      01010101 
+ 717              	.LASF25:
+ 718 0000 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_ENTRY_REQUEST\000"
+ 718      455F4556 
+ 718      545F4741 
+ 718      505F5041 
+ 718      53534B45 
+ 719              	.LASF95:
+ 720 0024 73706565 		.ascii	"speedRight\000"
+ 720      64526967 
+ 720      687400
+ 721              	.LASF22:
+ 722 002f 4359424C 		.ascii	"CYBLE_EVT_MEMORY_REQUEST\000"
+ 722      455F4556 
+ 722      545F4D45 
+ 722      4D4F5259 
+ 722      5F524551 
+ 723              	.LASF47:
+ 724 0048 4359424C 		.ascii	"CYBLE_EVT_GATTC_ERROR_RSP\000"
+ 724      455F4556 
+ 724      545F4741 
+ 724      5454435F 
+ 724      4552524F 
+ 725              	.LASF37:
+ 726 0062 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYPRESS_NOTIFICATION\000"
+ 726      455F4556 
+ 726      545F4741 
+ 726      505F4B45 
+ 726      59505245 
+ 727              	.LASF2:
+ 728 0086 73686F72 		.ascii	"short int\000"
+ 728      7420696E 
+ 728      7400
+ 729              	.LASF28:
+ 730 0090 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_FAILED\000"
+ 730      455F4556 
+ 730      545F4741 
+ 730      505F4155 
+ 730      54485F46 
+ 731              	.LASF49:
+ 732 00aa 4359424C 		.ascii	"CYBLE_EVT_GATT_DISCONNECT_IND\000"
+ 732      455F4556 
+ 732      545F4741 
+ 732      54545F44 
+ 732      4953434F 
+ 733              	.LASF90:
+ 734 00c8 4359424C 		.ascii	"CYBLE_SRVI_CUSTOMS\000"
+ 734      455F5352 
+ 734      56495F43 
+ 734      5553544F 
+ 734      4D5300
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 16
+
+
+ 735              	.LASF15:
+ 736 00db 73697A65 		.ascii	"sizetype\000"
+ 736      74797065 
+ 736      00
+ 737              	.LASF94:
+ 738 00e4 73706565 		.ascii	"speedLeft\000"
+ 738      644C6566 
+ 738      7400
+ 739              	.LASF39:
+ 740 00ee 4359424C 		.ascii	"CYBLE_EVT_GAP_DATA_LENGTH_CHANGE\000"
+ 740      455F4556 
+ 740      545F4741 
+ 740      505F4441 
+ 740      54415F4C 
+ 741              	.LASF20:
+ 742 010f 4359424C 		.ascii	"CYBLE_EVT_HCI_STATUS\000"
+ 742      455F4556 
+ 742      545F4843 
+ 742      495F5354 
+ 742      41545553 
+ 743              	.LASF97:
+ 744 0124 5744542E 		.ascii	"WDT.c\000"
+ 744      6300
+ 745              	.LASF6:
+ 746 012a 6C6F6E67 		.ascii	"long long int\000"
+ 746      206C6F6E 
+ 746      6720696E 
+ 746      7400
+ 747              	.LASF99:
+ 748 0138 496E6974 		.ascii	"InitializeWatchdog\000"
+ 748      69616C69 
+ 748      7A655761 
+ 748      74636864 
+ 748      6F6700
+ 749              	.LASF60:
+ 750 014b 4359424C 		.ascii	"CYBLE_EVT_GATTC_WRITE_RSP\000"
+ 750      455F4556 
+ 750      545F4741 
+ 750      5454435F 
+ 750      57524954 
+ 751              	.LASF53:
+ 752 0165 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_TYPE_RSP\000"
+ 752      455F4556 
+ 752      545F4741 
+ 752      5454435F 
+ 752      52454144 
+ 753              	.LASF17:
+ 754 0186 4359424C 		.ascii	"CYBLE_EVT_STACK_ON\000"
+ 754      455F4556 
+ 754      545F5354 
+ 754      41434B5F 
+ 754      4F4E00
+ 755              	.LASF46:
+ 756 0199 4359424C 		.ascii	"CYBLE_EVT_GAP_SMP_LOC_P256_KEYS_GEN_AND_SET_COMPLET"
+ 756      455F4556 
+ 756      545F4741 
+ 756      505F534D 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 17
+
+
+ 756      505F4C4F 
+ 757 01cc 4500     		.ascii	"E\000"
+ 758              	.LASF50:
+ 759 01ce 4359424C 		.ascii	"CYBLE_EVT_GATTS_XCNHG_MTU_REQ\000"
+ 759      455F4556 
+ 759      545F4741 
+ 759      5454535F 
+ 759      58434E48 
+ 760              	.LASF9:
+ 761 01ec 75696E74 		.ascii	"uint16\000"
+ 761      313600
+ 762              	.LASF35:
+ 763 01f3 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYINFO_EXCHNGE_CMPLT\000"
+ 763      455F4556 
+ 763      545F4741 
+ 763      505F4B45 
+ 763      59494E46 
+ 764              	.LASF58:
+ 765 0217 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_MULTI_RSP\000"
+ 765      455F4556 
+ 765      545F4741 
+ 765      5454435F 
+ 765      52454144 
+ 766              	.LASF67:
+ 767 0236 4359424C 		.ascii	"CYBLE_EVT_GATTS_HANDLE_VALUE_CNF\000"
+ 767      455F4556 
+ 767      545F4741 
+ 767      5454535F 
+ 767      48414E44 
+ 768              	.LASF16:
+ 769 0257 4359424C 		.ascii	"CYBLE_EVT_HOST_INVALID\000"
+ 769      455F4556 
+ 769      545F484F 
+ 769      53545F49 
+ 769      4E56414C 
+ 770              	.LASF92:
+ 771 026e 4359424C 		.ascii	"CYBLE_SRVI_COUNT\000"
+ 771      455F5352 
+ 771      56495F43 
+ 771      4F554E54 
+ 771      00
+ 772              	.LASF75:
+ 773 027f 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_IND\000"
+ 773      455F4556 
+ 773      545F4C32 
+ 773      4341505F 
+ 773      43424643 
+ 774              	.LASF78:
+ 775 029d 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_CNF\000"
+ 775      455F4556 
+ 775      545F4C32 
+ 775      4341505F 
+ 775      43424643 
+ 776              	.LASF11:
+ 777 02be 666C6F61 		.ascii	"float\000"
+ 777      7400
+ 778              	.LASF56:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 18
+
+
+ 779 02c4 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_RSP\000"
+ 779      455F4556 
+ 779      545F4741 
+ 779      5454435F 
+ 779      52454144 
+ 780              	.LASF36:
+ 781 02dd 4359424C 		.ascii	"CYBLE_EVT_GAP_NUMERIC_COMPARISON_REQUEST\000"
+ 781      455F4556 
+ 781      545F4741 
+ 781      505F4E55 
+ 781      4D455249 
+ 782              	.LASF41:
+ 783 0306 4359424C 		.ascii	"CYBLE_EVT_GAPC_DIRECT_ADV_REPORT\000"
+ 783      455F4556 
+ 783      545F4741 
+ 783      50435F44 
+ 783      49524543 
+ 784              	.LASF7:
+ 785 0327 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 785      206C6F6E 
+ 785      6720756E 
+ 785      7369676E 
+ 785      65642069 
+ 786              	.LASF45:
+ 787 033e 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ_REPLY_ERR\000"
+ 787      455F4556 
+ 787      545F4741 
+ 787      505F4155 
+ 787      54485F52 
+ 788              	.LASF93:
+ 789 035f 63757272 		.ascii	"current_watchdog_counter\000"
+ 789      656E745F 
+ 789      77617463 
+ 789      68646F67 
+ 789      5F636F75 
+ 790              	.LASF4:
+ 791 0378 6C6F6E67 		.ascii	"long int\000"
+ 791      20696E74 
+ 791      00
+ 792              	.LASF66:
+ 793 0381 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_IND\000"
+ 793      455F4556 
+ 793      545F4741 
+ 793      5454435F 
+ 793      48414E44 
+ 794              	.LASF89:
+ 795 03a2 4359424C 		.ascii	"CYBLE_SRVI_GATT\000"
+ 795      455F5352 
+ 795      56495F47 
+ 795      41545400 
+ 796              	.LASF30:
+ 797 03b2 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_CONNECTED\000"
+ 797      455F4556 
+ 797      545F4741 
+ 797      505F4445 
+ 797      56494345 
+ 798              	.LASF91:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 19
+
+
+ 799 03d1 4359424C 		.ascii	"CYBLE_SRVI_CUSTOMS_END\000"
+ 799      455F5352 
+ 799      56495F43 
+ 799      5553544F 
+ 799      4D535F45 
+ 800              	.LASF65:
+ 801 03e8 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_NTF\000"
+ 801      455F4556 
+ 801      545F4741 
+ 801      5454435F 
+ 801      48414E44 
+ 802              	.LASF21:
+ 803 0409 4359424C 		.ascii	"CYBLE_EVT_STACK_BUSY_STATUS\000"
+ 803      455F4556 
+ 803      545F5354 
+ 803      41434B5F 
+ 803      42555359 
+ 804              	.LASF26:
+ 805 0425 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_DISPLAY_REQUEST\000"
+ 805      455F4556 
+ 805      545F4741 
+ 805      505F5041 
+ 805      53534B45 
+ 806              	.LASF96:
+ 807 044b 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 807      43313120 
+ 807      352E342E 
+ 807      31203230 
+ 807      31363036 
+ 808 047e 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 808      20726576 
+ 808      6973696F 
+ 808      6E203233 
+ 808      37373135 
+ 809 04b1 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 809      66756E63 
+ 809      74696F6E 
+ 809      2D736563 
+ 809      74696F6E 
+ 810              	.LASF76:
+ 811 04d9 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_CNF\000"
+ 811      455F4556 
+ 811      545F4C32 
+ 811      4341505F 
+ 811      43424643 
+ 812              	.LASF40:
+ 813 04f7 4359424C 		.ascii	"CYBLE_EVT_GAP_ENHANCE_CONN_COMPLETE\000"
+ 813      455F4556 
+ 813      545F4741 
+ 813      505F454E 
+ 813      48414E43 
+ 814              	.LASF14:
+ 815 051b 6C6F6E67 		.ascii	"long double\000"
+ 815      20646F75 
+ 815      626C6500 
+ 816              	.LASF72:
+ 817 0527 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_REQ\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 20
+
+
+ 817      455F4556 
+ 817      545F4C32 
+ 817      4341505F 
+ 817      434F4E4E 
+ 818              	.LASF1:
+ 819 054d 756E7369 		.ascii	"unsigned char\000"
+ 819      676E6564 
+ 819      20636861 
+ 819      7200
+ 820              	.LASF62:
+ 821 055b 4359424C 		.ascii	"CYBLE_EVT_GATTS_PREP_WRITE_REQ\000"
+ 821      455F4556 
+ 821      545F4741 
+ 821      5454535F 
+ 821      50524550 
+ 822              	.LASF84:
+ 823 057a 4359424C 		.ascii	"CYBLE_EVT_LE_PING_AUTH_TIMEOUT\000"
+ 823      455F4556 
+ 823      545F4C45 
+ 823      5F50494E 
+ 823      475F4155 
+ 824              	.LASF98:
+ 825 0599 453A5C55 		.ascii	"E:\\Users\\lesia\\Desktop\\Mesh_Flood_PSoC4BLE.cyds"
+ 825      73657273 
+ 825      5C6C6573 
+ 825      69615C44 
+ 825      65736B74 
+ 826 05c8 6E00     		.ascii	"n\000"
+ 827              	.LASF54:
+ 828 05ca 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_INFO_RSP\000"
+ 828      455F4556 
+ 828      545F4741 
+ 828      5454435F 
+ 828      46494E44 
+ 829              	.LASF0:
+ 830 05e8 7369676E 		.ascii	"signed char\000"
+ 830      65642063 
+ 830      68617200 
+ 831              	.LASF59:
+ 832 05f4 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_REQ\000"
+ 832      455F4556 
+ 832      545F4741 
+ 832      5454535F 
+ 832      57524954 
+ 833              	.LASF55:
+ 834 060e 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_BY_TYPE_VALUE_RSP\000"
+ 834      455F4556 
+ 834      545F4741 
+ 834      5454435F 
+ 834      46494E44 
+ 835              	.LASF27:
+ 836 0635 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_COMPLETE\000"
+ 836      455F4556 
+ 836      545F4741 
+ 836      505F4155 
+ 836      54485F43 
+ 837              	.LASF8:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 21
+
+
+ 838 0651 756E7369 		.ascii	"unsigned int\000"
+ 838      676E6564 
+ 838      20696E74 
+ 838      00
+ 839              	.LASF48:
+ 840 065e 4359424C 		.ascii	"CYBLE_EVT_GATT_CONNECT_IND\000"
+ 840      455F4556 
+ 840      545F4741 
+ 840      54545F43 
+ 840      4F4E4E45 
+ 841              	.LASF5:
+ 842 0679 6C6F6E67 		.ascii	"long unsigned int\000"
+ 842      20756E73 
+ 842      69676E65 
+ 842      6420696E 
+ 842      7400
+ 843              	.LASF24:
+ 844 068b 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ\000"
+ 844      455F4556 
+ 844      545F4741 
+ 844      505F4155 
+ 844      54485F52 
+ 845              	.LASF77:
+ 846 06a2 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_IND\000"
+ 846      455F4556 
+ 846      545F4C32 
+ 846      4341505F 
+ 846      43424643 
+ 847              	.LASF32:
+ 848 06c3 4359424C 		.ascii	"CYBLE_EVT_GAP_ENCRYPT_CHANGE\000"
+ 848      455F4556 
+ 848      545F4741 
+ 848      505F454E 
+ 848      43525950 
+ 849              	.LASF43:
+ 850 06e0 4359424C 		.ascii	"CYBLE_EVT_GAP_CONN_ESTB\000"
+ 850      455F4556 
+ 850      545F4741 
+ 850      505F434F 
+ 850      4E4E5F45 
+ 851              	.LASF71:
+ 852 06f8 4359424C 		.ascii	"CYBLE_EVT_GATTC_LONG_PROCEDURE_END\000"
+ 852      455F4556 
+ 852      545F4741 
+ 852      5454435F 
+ 852      4C4F4E47 
+ 853              	.LASF3:
+ 854 071b 73686F72 		.ascii	"short unsigned int\000"
+ 854      7420756E 
+ 854      7369676E 
+ 854      65642069 
+ 854      6E7400
+ 855              	.LASF86:
+ 856 072e 4359424C 		.ascii	"CYBLE_EVT_FLASH_CORRUPT\000"
+ 856      455F4556 
+ 856      545F464C 
+ 856      4153485F 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 22
+
+
+ 856      434F5252 
+ 857              	.LASF33:
+ 858 0746 4359424C 		.ascii	"CYBLE_EVT_GAP_CONNECTION_UPDATE_COMPLETE\000"
+ 858      455F4556 
+ 858      545F4741 
+ 858      505F434F 
+ 858      4E4E4543 
+ 859              	.LASF42:
+ 860 076f 4359424C 		.ascii	"CYBLE_EVT_GAP_SMP_NEGOTIATED_AUTH_INFO\000"
+ 860      455F4556 
+ 860      545F4741 
+ 860      505F534D 
+ 860      505F4E45 
+ 861              	.LASF13:
+ 862 0796 63686172 		.ascii	"char\000"
+ 862      00
+ 863              	.LASF74:
+ 864 079b 4359424C 		.ascii	"CYBLE_EVT_L2CAP_COMMAND_REJ\000"
+ 864      455F4556 
+ 864      545F4C32 
+ 864      4341505F 
+ 864      434F4D4D 
+ 865              	.LASF57:
+ 866 07b7 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BLOB_RSP\000"
+ 866      455F4556 
+ 866      545F4741 
+ 866      5454435F 
+ 866      52454144 
+ 867              	.LASF88:
+ 868 07d5 4359424C 		.ascii	"CYBLE_SRVI_GAP\000"
+ 868      455F5352 
+ 868      56495F47 
+ 868      415000
+ 869              	.LASF64:
+ 870 07e4 4359424C 		.ascii	"CYBLE_EVT_GATTC_EXEC_WRITE_RSP\000"
+ 870      455F4556 
+ 870      545F4741 
+ 870      5454435F 
+ 870      45584543 
+ 871              	.LASF10:
+ 872 0803 75696E74 		.ascii	"uint32\000"
+ 872      333200
+ 873              	.LASF83:
+ 874 080a 4359424C 		.ascii	"CYBLE_EVT_PENDING_FLASH_WRITE\000"
+ 874      455F4556 
+ 874      545F5045 
+ 874      4E44494E 
+ 874      475F464C 
+ 875              	.LASF80:
+ 876 0828 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_RX_CREDIT_IND\000"
+ 876      455F4556 
+ 876      545F4C32 
+ 876      4341505F 
+ 876      43424643 
+ 877              	.LASF12:
+ 878 084b 646F7562 		.ascii	"double\000"
+ 878      6C6500
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 23
+
+
+ 879              	.LASF81:
+ 880 0852 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_TX_CREDIT_IND\000"
+ 880      455F4556 
+ 880      545F4C32 
+ 880      4341505F 
+ 880      43424643 
+ 881              	.LASF44:
+ 882 0875 4359424C 		.ascii	"CYBLE_EVT_GAP_SCAN_REQ_RECVD\000"
+ 882      455F4556 
+ 882      545F4741 
+ 882      505F5343 
+ 882      414E5F52 
+ 883              	.LASF29:
+ 884 0892 4359424C 		.ascii	"CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP\000"
+ 884      455F4556 
+ 884      545F4741 
+ 884      50505F41 
+ 884      44564552 
+ 885              	.LASF19:
+ 886 08ba 4359424C 		.ascii	"CYBLE_EVT_HARDWARE_ERROR\000"
+ 886      455F4556 
+ 886      545F4841 
+ 886      52445741 
+ 886      52455F45 
+ 887              	.LASF79:
+ 888 08d3 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_READ\000"
+ 888      455F4556 
+ 888      545F4C32 
+ 888      4341505F 
+ 888      43424643 
+ 889              	.LASF73:
+ 890 08f2 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_RSP\000"
+ 890      455F4556 
+ 890      545F4C32 
+ 890      4341505F 
+ 890      434F4E4E 
+ 891              	.LASF23:
+ 892 0918 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_PROGRESS_RESULT\000"
+ 892      455F4556 
+ 892      545F4741 
+ 892      50435F53 
+ 892      43414E5F 
+ 893              	.LASF52:
+ 894 093c 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_GROUP_TYPE_RSP\000"
+ 894      455F4556 
+ 894      545F4741 
+ 894      5454435F 
+ 894      52454144 
+ 895              	.LASF61:
+ 896 0963 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_CMD_REQ\000"
+ 896      455F4556 
+ 896      545F4741 
+ 896      5454535F 
+ 896      57524954 
+ 897              	.LASF51:
+ 898 0981 4359424C 		.ascii	"CYBLE_EVT_GATTC_XCHNG_MTU_RSP\000"
+ 898      455F4556 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 24
+
+
+ 898      545F4741 
+ 898      5454435F 
+ 898      5843484E 
+ 899              	.LASF100:
+ 900 099f 6D617463 		.ascii	"match_val\000"
+ 900      685F7661 
+ 900      6C00
+ 901              	.LASF18:
+ 902 09a9 4359424C 		.ascii	"CYBLE_EVT_TIMEOUT\000"
+ 902      455F4556 
+ 902      545F5449 
+ 902      4D454F55 
+ 902      5400
+ 903              	.LASF82:
+ 904 09bb 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_WRITE_IND\000"
+ 904      455F4556 
+ 904      545F4C32 
+ 904      4341505F 
+ 904      43424643 
+ 905              	.LASF34:
+ 906 09df 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_START_STOP\000"
+ 906      455F4556 
+ 906      545F4741 
+ 906      50435F53 
+ 906      43414E5F 
+ 907              	.LASF87:
+ 908 09fe 4359424C 		.ascii	"CYBLE_EVT_MAX\000"
+ 908      455F4556 
+ 908      545F4D41 
+ 908      5800
+ 909              	.LASF70:
+ 910 0a0c 4359424C 		.ascii	"CYBLE_EVT_GATTS_READ_CHAR_VAL_ACCESS_REQ\000"
+ 910      455F4556 
+ 910      545F4741 
+ 910      5454535F 
+ 910      52454144 
+ 911              	.LASF69:
+ 912 0a35 4359424C 		.ascii	"CYBLE_EVT_GATTC_STOP_CMD_COMPLETE\000"
+ 912      455F4556 
+ 912      545F4741 
+ 912      5454435F 
+ 912      53544F50 
+ 913              	.LASF63:
+ 914 0a57 4359424C 		.ascii	"CYBLE_EVT_GATTS_EXEC_WRITE_REQ\000"
+ 914      455F4556 
+ 914      545F4741 
+ 914      5454535F 
+ 914      45584543 
+ 915              	.LASF31:
+ 916 0a76 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_DISCONNECTED\000"
+ 916      455F4556 
+ 916      545F4741 
+ 916      505F4445 
+ 916      56494345 
+ 917              	.LASF101:
+ 918 0a98 5744545F 		.ascii	"WDT_INT_Handler\000"
+ 918      494E545F 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\cc4A4HAi.s 			page 25
+
+
+ 918      48616E64 
+ 918      6C657200 
+ 919              	.LASF68:
+ 920 0aa8 4359424C 		.ascii	"CYBLE_EVT_GATTS_DATA_SIGNED_CMD_REQ\000"
+ 920      455F4556 
+ 920      545F4741 
+ 920      5454535F 
+ 920      44415441 
+ 921              	.LASF85:
+ 922 0acc 4359424C 		.ascii	"CYBLE_EVT_HCI_PKT\000"
+ 922      455F4556 
+ 922      545F4843 
+ 922      495F504B 
+ 922      5400
+ 923              	.LASF38:
+ 924 0ade 4359424C 		.ascii	"CYBLE_EVT_GAP_OOB_GENERATED_NOTIFICATION\000"
+ 924      455F4556 
+ 924      545F4741 
+ 924      505F4F4F 
+ 924      425F4745 
+ 925              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

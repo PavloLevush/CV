@@ -1,0 +1,18 @@
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\bin\Debug\Word searcher.exe.config
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\bin\Debug\Word searcher.exe
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\bin\Debug\Word searcher.pdb
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word searcher.csprojResolveAssemblyReference.cache
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word_searcher.Form1.resources
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word_searcher.Properties.Resources.resources
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word searcher.csproj.GenerateResource.Cache
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word searcher.exe
+c:\users\asus\documents\visual studio 2015\Projects\test\Word searcher\Word searcher\obj\Debug\Word searcher.pdb
+C:\Users\asus\Desktop\Word searcher\Word searcher\bin\Debug\Word searcher.exe.config
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word searcher.exe
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word searcher.pdb
+C:\Users\asus\Desktop\Word searcher\Word searcher\bin\Debug\Word searcher.exe
+C:\Users\asus\Desktop\Word searcher\Word searcher\bin\Debug\Word searcher.pdb
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word searcher.csprojResolveAssemblyReference.cache
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word_searcher.Form1.resources
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word_searcher.Properties.Resources.resources
+C:\Users\asus\Desktop\Word searcher\Word searcher\obj\Debug\Word searcher.csproj.GenerateResource.Cache

@@ -1,0 +1,3770 @@
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.comm	current_watchdog_counter,2,2
+  20              		.comm	speedLeft,4,4
+  21              		.comm	speedRight,4,4
+  22              		.global	processTachFlag
+  23              		.bss
+  24              		.align	2
+  25              		.type	processTachFlag, %object
+  26              		.size	processTachFlag, 4
+  27              	processTachFlag:
+  28 0000 00000000 		.space	4
+  29              		.global	tachLeftNotify
+  30              		.align	2
+  31              		.type	tachLeftNotify, %object
+  32              		.size	tachLeftNotify, 4
+  33              	tachLeftNotify:
+  34 0004 00000000 		.space	4
+  35              		.global	tachRightNotify
+  36              		.align	2
+  37              		.type	tachRightNotify, %object
+  38              		.size	tachRightNotify, 4
+  39              	tachRightNotify:
+  40 0008 00000000 		.space	4
+  41              		.global	tachLeft
+  42              		.align	2
+  43              		.type	tachLeft, %object
+  44              		.size	tachLeft, 4
+  45              	tachLeft:
+  46 000c 00000000 		.space	4
+  47              		.global	tachRight
+  48              		.align	2
+  49              		.type	tachRight, %object
+  50              		.size	tachRight, 4
+  51              	tachRight:
+  52 0010 00000000 		.space	4
+  53              		.global	motorFlag
+  54              		.align	2
+  55              		.type	motorFlag, %object
+  56              		.size	motorFlag, 4
+  57              	motorFlag:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 2
+
+
+  58 0014 00000000 		.space	4
+  59              		.global	direct
+  60              		.align	2
+  61              		.type	direct, %object
+  62              		.size	direct, 4
+  63              	direct:
+  64 0018 00000000 		.space	4
+  65              		.section	.text.updateSpeed,"ax",%progbits
+  66              		.align	2
+  67              		.global	updateSpeed
+  68              		.code	16
+  69              		.thumb_func
+  70              		.type	updateSpeed, %function
+  71              	updateSpeed:
+  72              	.LFB36:
+  73              		.file 1 "main.c"
+   1:main.c        **** /******************************************************************************
+   2:main.c        **** * Project Name		: Mesh_Flood_PSoC4BLE
+   3:main.c        **** * File Name			: main.c
+   4:main.c        **** * Version 			: 1.0
+   5:main.c        **** * Device Used		: CY8C4247LQI-BL483
+   6:main.c        **** * Software Used		: PSoC Creator 3.1 SP1
+   7:main.c        **** * Compiler    		: ARM GCC 4.8.4, ARM RVDS Generic, ARM MDK Generic
+   8:main.c        **** * Related Hardware	: CY8CKIT-042-BLE Bluetooth Low Energy Pioneer Kit 
+   9:main.c        **** * Owner             : roit@cypress.com
+  10:main.c        **** *
+  11:main.c        **** ********************************************************************************
+  12:main.c        **** * Copyright (2014-15), Cypress Semiconductor Corporation. All Rights Reserved.
+  13:main.c        **** ********************************************************************************
+  14:main.c        **** * This software is owned by Cypress Semiconductor Corporation (Cypress)
+  15:main.c        **** * and is protected by and subject to worldwide patent protection (United
+  16:main.c        **** * States and foreign), United States copyright laws and international treaty
+  17:main.c        **** * provisions. Cypress hereby grants to licensee a personal, non-exclusive,
+  18:main.c        **** * non-transferable license to copy, use, modify, create derivative works of,
+  19:main.c        **** * and compile the Cypress Source Code and derivative works for the sole
+  20:main.c        **** * purpose of creating custom software in support of licensee product to be
+  21:main.c        **** * used only in conjunction with a Cypress integrated circuit as specified in
+  22:main.c        **** * the applicable agreement. Any reproduction, modification, translation,
+  23:main.c        **** * compilation, or representation of this software except as specified above 
+  24:main.c        **** * is prohibited without the express written permission of Cypress.
+  25:main.c        **** *
+  26:main.c        **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH 
+  27:main.c        **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+  28:main.c        **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  29:main.c        **** * Cypress reserves the right to make changes without further notice to the 
+  30:main.c        **** * materials described herein. Cypress does not assume any liability arising out 
+  31:main.c        **** * of the application or use of any product or circuit described herein. Cypress 
+  32:main.c        **** * does not authorize its products for use as critical components in life-support 
+  33:main.c        **** * systems where a malfunction or failure may reasonably be expected to result in 
+  34:main.c        **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  35:main.c        **** * support systems application implies that the manufacturer assumes all risk of 
+  36:main.c        **** * such use and in doing so indemnifies Cypress against all charges. 
+  37:main.c        **** *
+  38:main.c        **** * Use of this Software may be limited by and subject to the applicable Cypress
+  39:main.c        **** * software license agreement. 
+  40:main.c        **** *******************************************************************************/
+  41:main.c        **** #include <main.h>
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 3
+
+
+  42:main.c        **** #include <project.h>
+  43:main.c        **** #include <stdlib.h>
+  44:main.c        **** #include <stdio.h>
+  45:main.c        **** 
+  46:main.c        **** extern uint8 switch_Role;
+  47:main.c        **** extern uint8 ble_gap_state;
+  48:main.c        **** extern uint8 deviceConnected;
+  49:main.c        **** 
+  50:main.c        **** extern uint8 restartScanning;
+  51:main.c        **** 
+  52:main.c        **** extern uint8 dataADVCounter;
+  53:main.c        **** 
+  54:main.c        **** #ifdef ENABLE_ADV_DATA_COUNTER
+  55:main.c        **** extern CYBLE_GAPP_DISC_DATA_T  new_advData;
+  56:main.c        **** extern uint8 potential_node_found;
+  57:main.c        **** extern uint8 potential_node_bdAddr[6];
+  58:main.c        **** extern uint8 potential_node_bdAddrType;
+  59:main.c        **** #endif
+  60:main.c        **** 
+  61:main.c        **** extern uint8 clientConnectToDevice;
+  62:main.c        **** extern CYBLE_GAP_BD_ADDR_T				peripAddr;;
+  63:main.c        **** 
+  64:main.c        ****     
+  65:main.c        **** int processTachFlag = 0;
+  66:main.c        **** int tachLeftNotify = 0;
+  67:main.c        **** int tachRightNotify = 0;
+  68:main.c        **** int tachLeft = 0;
+  69:main.c        **** int tachRight = 0;
+  70:main.c        **** 
+  71:main.c        **** int motorFlag = 0;
+  72:main.c        **** int direct = 0;
+  73:main.c        **** 
+  74:main.c        **** 
+  75:main.c        **** void updateSpeed()
+  76:main.c        **** {
+  74              		.loc 1 76 0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 16
+  77              		@ frame_needed = 1, uses_anonymous_args = 0
+  78 0000 80B5     		push	{r7, lr}
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 84B0     		sub	sp, sp, #16
+  83              		.cfi_def_cfa_offset 24
+  84 0004 00AF     		add	r7, sp, #0
+  85              		.cfi_def_cfa_register 7
+  77:main.c        ****     if(CyBle_GetState() != CYBLE_STATE_CONNECTED)
+  86              		.loc 1 77 0
+  87 0006 134B     		ldr	r3, .L5
+  88 0008 1B78     		ldrb	r3, [r3]
+  89 000a 022B     		cmp	r3, #2
+  90 000c 1ED1     		bne	.L4
+  78:main.c        ****         return;
+  79:main.c        **** 
+  80:main.c        ****     CYBLE_GATTS_HANDLE_VALUE_NTF_T tempHandle;
+  81:main.c        ****     
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 4
+
+
+  82:main.c        ****     tempHandle.attrHandle = CYBLE_MOTORSERVICE_SPEEDLEFT_CHAR_HANDLE;
+  91              		.loc 1 82 0
+  92 000e 3B1D     		adds	r3, r7, #4
+  93 0010 1422     		movs	r2, #20
+  94 0012 1A81     		strh	r2, [r3, #8]
+  83:main.c        ****     tempHandle.value.val = (uint8 *)&speedLeft;
+  95              		.loc 1 83 0
+  96 0014 3B1D     		adds	r3, r7, #4
+  97 0016 104A     		ldr	r2, .L5+4
+  98 0018 1A60     		str	r2, [r3]
+  84:main.c        ****     tempHandle.value.len = 1;
+  99              		.loc 1 84 0
+ 100 001a 3B1D     		adds	r3, r7, #4
+ 101 001c 0122     		movs	r2, #1
+ 102 001e 9A80     		strh	r2, [r3, #4]
+  85:main.c        ****     CyBle_GattsWriteAttributeValue(&tempHandle, 0, &cyBle_connHandle, 0);
+ 103              		.loc 1 85 0
+ 104 0020 0E4A     		ldr	r2, .L5+8
+ 105 0022 381D     		adds	r0, r7, #4
+ 106 0024 0023     		movs	r3, #0
+ 107 0026 0021     		movs	r1, #0
+ 108 0028 FFF7FEFF 		bl	CyBle_GattsWriteAttributeValue
+  86:main.c        ****     
+  87:main.c        ****     tempHandle.attrHandle = CYBLE_MOTORSERVICE_SPEEDRIGHT_CHAR_HANDLE;
+ 109              		.loc 1 87 0
+ 110 002c 3B1D     		adds	r3, r7, #4
+ 111 002e 1722     		movs	r2, #23
+ 112 0030 1A81     		strh	r2, [r3, #8]
+  88:main.c        ****     tempHandle.value.val = (uint8 *)&speedRight;
+ 113              		.loc 1 88 0
+ 114 0032 3B1D     		adds	r3, r7, #4
+ 115 0034 0A4A     		ldr	r2, .L5+12
+ 116 0036 1A60     		str	r2, [r3]
+  89:main.c        ****     tempHandle.value.len = 1;
+ 117              		.loc 1 89 0
+ 118 0038 3B1D     		adds	r3, r7, #4
+ 119 003a 0122     		movs	r2, #1
+ 120 003c 9A80     		strh	r2, [r3, #4]
+  90:main.c        ****     CyBle_GattsWriteAttributeValue(&tempHandle, 0, &cyBle_connHandle, 0);      
+ 121              		.loc 1 90 0
+ 122 003e 074A     		ldr	r2, .L5+8
+ 123 0040 381D     		adds	r0, r7, #4
+ 124 0042 0023     		movs	r3, #0
+ 125 0044 0021     		movs	r1, #0
+ 126 0046 FFF7FEFF 		bl	CyBle_GattsWriteAttributeValue
+ 127 004a 00E0     		b	.L1
+ 128              	.L4:
+  78:main.c        **** 
+ 129              		.loc 1 78 0
+ 130 004c C046     		nop
+ 131              	.L1:
+  91:main.c        **** }
+ 132              		.loc 1 91 0
+ 133 004e BD46     		mov	sp, r7
+ 134 0050 04B0     		add	sp, sp, #16
+ 135              		@ sp needed
+ 136 0052 80BD     		pop	{r7, pc}
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 5
+
+
+ 137              	.L6:
+ 138              		.align	2
+ 139              	.L5:
+ 140 0054 00000000 		.word	cyBle_state
+ 141 0058 00000000 		.word	speedLeft
+ 142 005c 00000000 		.word	cyBle_connHandle
+ 143 0060 00000000 		.word	speedRight
+ 144              		.cfi_endproc
+ 145              	.LFE36:
+ 146              		.size	updateSpeed, .-updateSpeed
+ 147              		.section	.text.setSpeed,"ax",%progbits
+ 148              		.align	2
+ 149              		.global	setSpeed
+ 150              		.code	16
+ 151              		.thumb_func
+ 152              		.type	setSpeed, %function
+ 153              	setSpeed:
+ 154              	.LFB37:
+  92:main.c        **** 
+  93:main.c        **** void setSpeed(motor m, int speed)
+  94:main.c        **** {
+ 155              		.loc 1 94 0
+ 156              		.cfi_startproc
+ 157              		@ args = 0, pretend = 0, frame = 16
+ 158              		@ frame_needed = 1, uses_anonymous_args = 0
+ 159 0000 80B5     		push	{r7, lr}
+ 160              		.cfi_def_cfa_offset 8
+ 161              		.cfi_offset 7, -8
+ 162              		.cfi_offset 14, -4
+ 163 0002 84B0     		sub	sp, sp, #16
+ 164              		.cfi_def_cfa_offset 24
+ 165 0004 00AF     		add	r7, sp, #0
+ 166              		.cfi_def_cfa_register 7
+ 167 0006 0200     		movs	r2, r0
+ 168 0008 3960     		str	r1, [r7]
+ 169 000a FB1D     		adds	r3, r7, #7
+ 170 000c 1A70     		strb	r2, [r3]
+  95:main.c        ****     int s = abs(speed);
+ 171              		.loc 1 95 0
+ 172 000e 3B68     		ldr	r3, [r7]
+ 173 0010 DA17     		asrs	r2, r3, #31
+ 174 0012 9B18     		adds	r3, r3, r2
+ 175 0014 5340     		eors	r3, r2
+ 176 0016 FB60     		str	r3, [r7, #12]
+  96:main.c        ****    // int dir = (s == speed)?0:1;
+  97:main.c        ****     
+  98:main.c        ****     if(s > MAXSPEED)
+ 177              		.loc 1 98 0
+ 178 0018 FB68     		ldr	r3, [r7, #12]
+ 179 001a 642B     		cmp	r3, #100
+ 180 001c 19DC     		bgt	.L13
+  99:main.c        ****         return;
+ 100:main.c        ****     
+ 101:main.c        ****     switch (m)
+ 181              		.loc 1 101 0
+ 182 001e FB1D     		adds	r3, r7, #7
+ 183 0020 1B78     		ldrb	r3, [r3]
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 6
+
+
+ 184 0022 002B     		cmp	r3, #0
+ 185 0024 02D0     		beq	.L11
+ 186 0026 012B     		cmp	r3, #1
+ 187 0028 08D0     		beq	.L12
+ 188 002a 0FE0     		b	.L10
+ 189              	.L11:
+ 102:main.c        ****     {
+ 103:main.c        ****         case LEFT:
+ 104:main.c        ****             //DIRLEFT_Write(dir);
+ 105:main.c        ****             PWMLEFT_WriteCompare(s);
+ 190              		.loc 1 105 0
+ 191 002c FB68     		ldr	r3, [r7, #12]
+ 192 002e 1800     		movs	r0, r3
+ 193 0030 FFF7FEFF 		bl	PWMLEFT_WriteCompare
+ 106:main.c        ****             speedLeft = speed;         
+ 194              		.loc 1 106 0
+ 195 0034 094B     		ldr	r3, .L14
+ 196 0036 3A68     		ldr	r2, [r7]
+ 197 0038 1A60     		str	r2, [r3]
+ 107:main.c        ****         break;
+ 198              		.loc 1 107 0
+ 199 003a 07E0     		b	.L10
+ 200              	.L12:
+ 108:main.c        ****         case RIGHT:
+ 109:main.c        ****             //DIRRIGHT_Write(dir);
+ 110:main.c        ****             PWMRIGHT_WriteCompare(s);
+ 201              		.loc 1 110 0
+ 202 003c FB68     		ldr	r3, [r7, #12]
+ 203 003e 1800     		movs	r0, r3
+ 204 0040 FFF7FEFF 		bl	PWMRIGHT_WriteCompare
+ 111:main.c        ****             speedRight = speed;
+ 205              		.loc 1 111 0
+ 206 0044 064B     		ldr	r3, .L14+4
+ 207 0046 3A68     		ldr	r2, [r7]
+ 208 0048 1A60     		str	r2, [r3]
+ 112:main.c        ****          //   printf("%c",speedRight);
+ 113:main.c        ****         break;
+ 209              		.loc 1 113 0
+ 210 004a C046     		nop
+ 211              	.L10:
+ 114:main.c        ****     }
+ 115:main.c        ****     updateSpeed();      // Update the speeed in the GATT database
+ 212              		.loc 1 115 0
+ 213 004c FFF7FEFF 		bl	updateSpeed
+ 214 0050 00E0     		b	.L7
+ 215              	.L13:
+  99:main.c        ****     
+ 216              		.loc 1 99 0
+ 217 0052 C046     		nop
+ 218              	.L7:
+ 116:main.c        **** }
+ 219              		.loc 1 116 0
+ 220 0054 BD46     		mov	sp, r7
+ 221 0056 04B0     		add	sp, sp, #16
+ 222              		@ sp needed
+ 223 0058 80BD     		pop	{r7, pc}
+ 224              	.L15:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 7
+
+
+ 225 005a C046     		.align	2
+ 226              	.L14:
+ 227 005c 00000000 		.word	speedLeft
+ 228 0060 00000000 		.word	speedRight
+ 229              		.cfi_endproc
+ 230              	.LFE37:
+ 231              		.size	setSpeed, .-setSpeed
+ 232              		.section	.text.updateRpm,"ax",%progbits
+ 233              		.align	2
+ 234              		.global	updateRpm
+ 235              		.code	16
+ 236              		.thumb_func
+ 237              		.type	updateRpm, %function
+ 238              	updateRpm:
+ 239              	.LFB38:
+ 117:main.c        **** 
+ 118:main.c        **** void updateRpm()
+ 119:main.c        **** {
+ 240              		.loc 1 119 0
+ 241              		.cfi_startproc
+ 242              		@ args = 0, pretend = 0, frame = 16
+ 243              		@ frame_needed = 1, uses_anonymous_args = 0
+ 244 0000 80B5     		push	{r7, lr}
+ 245              		.cfi_def_cfa_offset 8
+ 246              		.cfi_offset 7, -8
+ 247              		.cfi_offset 14, -4
+ 248 0002 84B0     		sub	sp, sp, #16
+ 249              		.cfi_def_cfa_offset 24
+ 250 0004 00AF     		add	r7, sp, #0
+ 251              		.cfi_def_cfa_register 7
+ 120:main.c        ****     if(CyBle_GetState() != CYBLE_STATE_CONNECTED)
+ 252              		.loc 1 120 0
+ 253 0006 0E4B     		ldr	r3, .L21
+ 254 0008 1B78     		ldrb	r3, [r3]
+ 255 000a 022B     		cmp	r3, #2
+ 256 000c 13D1     		bne	.L20
+ 121:main.c        ****         return;
+ 122:main.c        ****     
+ 123:main.c        ****     CYBLE_GATTS_HANDLE_VALUE_NTF_T tempHandle;
+ 124:main.c        ****     
+ 125:main.c        ****     /*tempHandle.attrHandle = CYBLE_MOTORSERVICE_TACHLEFT_CHAR_HANDLE;
+ 126:main.c        ****     tempHandle.value.val = (uint8 *)&tachLeft;
+ 127:main.c        ****     tempHandle.value.len = 4; // 4 bytes for integer
+ 128:main.c        ****     CyBle_GattsWriteAttributeValue(&tempHandle, 0, &cyBle_connHandle, 0);
+ 129:main.c        ****     
+ 130:main.c        ****     if (tachLeftNotify)
+ 131:main.c        ****         CyBle_GattsNotification(cyBle_connHandle, &tempHandle);
+ 132:main.c        ****         
+ 133:main.c        ****     tempHandle.attrHandle = CYBLE_MOTORSERVICE_TACHRIGHT_CHAR_HANDLE;
+ 134:main.c        ****     tempHandle.value.val = (uint8 *)&tachRight;
+ 135:main.c        ****     tempHandle.value.len = 4; // 4 bytes for integer
+ 136:main.c        ****     CyBle_GattsWriteAttributeValue(&tempHandle, 0, &cyBle_connHandle, 0);*/
+ 137:main.c        ****     
+ 138:main.c        ****     if (tachRightNotify)
+ 257              		.loc 1 138 0
+ 258 000e 0D4B     		ldr	r3, .L21+4
+ 259 0010 1B68     		ldr	r3, [r3]
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 8
+
+
+ 260 0012 002B     		cmp	r3, #0
+ 261 0014 10D0     		beq	.L16
+ 139:main.c        ****         CyBle_GattsNotification(cyBle_connHandle, &tempHandle); 
+ 262              		.loc 1 139 0
+ 263 0016 391D     		adds	r1, r7, #4
+ 264 0018 0B4B     		ldr	r3, .L21+8
+ 265 001a 1A78     		ldrb	r2, [r3]
+ 266 001c 5B78     		ldrb	r3, [r3, #1]
+ 267 001e 1B02     		lsls	r3, r3, #8
+ 268 0020 1A43     		orrs	r2, r3
+ 269 0022 0023     		movs	r3, #0
+ 270 0024 1204     		lsls	r2, r2, #16
+ 271 0026 120C     		lsrs	r2, r2, #16
+ 272 0028 1B0C     		lsrs	r3, r3, #16
+ 273 002a 1B04     		lsls	r3, r3, #16
+ 274 002c 1343     		orrs	r3, r2
+ 275 002e 1800     		movs	r0, r3
+ 276 0030 FFF7FEFF 		bl	CyBle_GattsNotification
+ 277 0034 00E0     		b	.L16
+ 278              	.L20:
+ 121:main.c        ****         return;
+ 279              		.loc 1 121 0
+ 280 0036 C046     		nop
+ 281              	.L16:
+ 140:main.c        ****         
+ 141:main.c        **** }
+ 282              		.loc 1 141 0
+ 283 0038 BD46     		mov	sp, r7
+ 284 003a 04B0     		add	sp, sp, #16
+ 285              		@ sp needed
+ 286 003c 80BD     		pop	{r7, pc}
+ 287              	.L22:
+ 288 003e C046     		.align	2
+ 289              	.L21:
+ 290 0040 00000000 		.word	cyBle_state
+ 291 0044 00000000 		.word	tachRightNotify
+ 292 0048 00000000 		.word	cyBle_connHandle
+ 293              		.cfi_endproc
+ 294              	.LFE38:
+ 295              		.size	updateRpm, .-updateRpm
+ 296              		.section	.text.swisr,"ax",%progbits
+ 297              		.align	2
+ 298              		.global	swisr
+ 299              		.code	16
+ 300              		.thumb_func
+ 301              		.type	swisr, %function
+ 302              	swisr:
+ 303              	.LFB39:
+ 142:main.c        **** 
+ 143:main.c        **** CY_ISR(swisr)
+ 144:main.c        **** {
+ 304              		.loc 1 144 0
+ 305              		.cfi_startproc
+ 306              		@ args = 0, pretend = 0, frame = 0
+ 307              		@ frame_needed = 1, uses_anonymous_args = 0
+ 308 0000 80B5     		push	{r7, lr}
+ 309              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 9
+
+
+ 310              		.cfi_offset 7, -8
+ 311              		.cfi_offset 14, -4
+ 312 0002 00AF     		add	r7, sp, #0
+ 313              		.cfi_def_cfa_register 7
+ 145:main.c        ****    // motorFlag = 1;
+ 146:main.c        ****    // Control_ClearInterrupt();
+ 147:main.c        ****    if(direct == 0)
+ 314              		.loc 1 147 0
+ 315 0004 124B     		ldr	r3, .L27
+ 316 0006 1B68     		ldr	r3, [r3]
+ 317 0008 002B     		cmp	r3, #0
+ 318 000a 0FD1     		bne	.L24
+ 148:main.c        ****    { 
+ 149:main.c        ****        POWERLEFT_Write(0);
+ 319              		.loc 1 149 0
+ 320 000c 0020     		movs	r0, #0
+ 321 000e FFF7FEFF 		bl	POWERLEFT_Write
+ 150:main.c        ****        POWERRIGHT_Write(0);
+ 322              		.loc 1 150 0
+ 323 0012 0020     		movs	r0, #0
+ 324 0014 FFF7FEFF 		bl	POWERRIGHT_Write
+ 151:main.c        ****        GNDLEFT_Write(1);
+ 325              		.loc 1 151 0
+ 326 0018 0120     		movs	r0, #1
+ 327 001a FFF7FEFF 		bl	GNDLEFT_Write
+ 152:main.c        ****        GNDRIGHT_Write(1);
+ 328              		.loc 1 152 0
+ 329 001e 0120     		movs	r0, #1
+ 330 0020 FFF7FEFF 		bl	GNDRIGHT_Write
+ 153:main.c        ****        direct = 1;
+ 331              		.loc 1 153 0
+ 332 0024 0A4B     		ldr	r3, .L27
+ 333 0026 0122     		movs	r2, #1
+ 334 0028 1A60     		str	r2, [r3]
+ 154:main.c        ****    }
+ 155:main.c        ****    else
+ 156:main.c        ****    {
+ 157:main.c        ****        POWERLEFT_Write(1);
+ 158:main.c        ****        POWERRIGHT_Write(1);
+ 159:main.c        ****        GNDLEFT_Write(0);
+ 160:main.c        ****        GNDRIGHT_Write(0);
+ 161:main.c        ****        direct = 0;   
+ 162:main.c        ****    }
+ 163:main.c        **** }
+ 335              		.loc 1 163 0
+ 336 002a 0EE0     		b	.L26
+ 337              	.L24:
+ 157:main.c        ****        POWERRIGHT_Write(1);
+ 338              		.loc 1 157 0
+ 339 002c 0120     		movs	r0, #1
+ 340 002e FFF7FEFF 		bl	POWERLEFT_Write
+ 158:main.c        ****        GNDLEFT_Write(0);
+ 341              		.loc 1 158 0
+ 342 0032 0120     		movs	r0, #1
+ 343 0034 FFF7FEFF 		bl	POWERRIGHT_Write
+ 159:main.c        ****        GNDRIGHT_Write(0);
+ 344              		.loc 1 159 0
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 10
+
+
+ 345 0038 0020     		movs	r0, #0
+ 346 003a FFF7FEFF 		bl	GNDLEFT_Write
+ 160:main.c        ****        direct = 0;   
+ 347              		.loc 1 160 0
+ 348 003e 0020     		movs	r0, #0
+ 349 0040 FFF7FEFF 		bl	GNDRIGHT_Write
+ 161:main.c        ****    }
+ 350              		.loc 1 161 0
+ 351 0044 024B     		ldr	r3, .L27
+ 352 0046 0022     		movs	r2, #0
+ 353 0048 1A60     		str	r2, [r3]
+ 354              	.L26:
+ 355              		.loc 1 163 0
+ 356 004a C046     		nop
+ 357 004c BD46     		mov	sp, r7
+ 358              		@ sp needed
+ 359 004e 80BD     		pop	{r7, pc}
+ 360              	.L28:
+ 361              		.align	2
+ 362              	.L27:
+ 363 0050 00000000 		.word	direct
+ 364              		.cfi_endproc
+ 365              	.LFE39:
+ 366              		.size	swisr, .-swisr
+ 367              		.section	.text.tachISR,"ax",%progbits
+ 368              		.align	2
+ 369              		.global	tachISR
+ 370              		.code	16
+ 371              		.thumb_func
+ 372              		.type	tachISR, %function
+ 373              	tachISR:
+ 374              	.LFB40:
+ 164:main.c        **** 
+ 165:main.c        **** CY_ISR(tachISR)
+ 166:main.c        **** {
+ 375              		.loc 1 166 0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 1, uses_anonymous_args = 0
+ 379 0000 80B5     		push	{r7, lr}
+ 380              		.cfi_def_cfa_offset 8
+ 381              		.cfi_offset 7, -8
+ 382              		.cfi_offset 14, -4
+ 383 0002 00AF     		add	r7, sp, #0
+ 384              		.cfi_def_cfa_register 7
+ 167:main.c        ****     processTachFlag = 1;
+ 385              		.loc 1 167 0
+ 386 0004 034B     		ldr	r3, .L30
+ 387 0006 0122     		movs	r2, #1
+ 388 0008 1A60     		str	r2, [r3]
+ 168:main.c        ****     tachPwm_ReadStatusRegister(); // clear the interrupt  
+ 389              		.loc 1 168 0
+ 390 000a FFF7FEFF 		bl	tachPwm_ReadStatusRegister
+ 169:main.c        **** }
+ 391              		.loc 1 169 0
+ 392 000e C046     		nop
+ 393 0010 BD46     		mov	sp, r7
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 11
+
+
+ 394              		@ sp needed
+ 395 0012 80BD     		pop	{r7, pc}
+ 396              	.L31:
+ 397              		.align	2
+ 398              	.L30:
+ 399 0014 00000000 		.word	processTachFlag
+ 400              		.cfi_endproc
+ 401              	.LFE40:
+ 402              		.size	tachISR, .-tachISR
+ 403              		.section	.text.handleMotor,"ax",%progbits
+ 404              		.align	2
+ 405              		.global	handleMotor
+ 406              		.code	16
+ 407              		.thumb_func
+ 408              		.type	handleMotor, %function
+ 409              	handleMotor:
+ 410              	.LFB42:
+ 170:main.c        **** 
+ 171:main.c        **** inline void processTach()
+ 172:main.c        **** {
+ 173:main.c        ****     processTachFlag = 0;
+ 174:main.c        ****     updateRpm(); // Update the GATT database with the new RPM values
+ 175:main.c        **** }
+ 176:main.c        **** 
+ 177:main.c        **** void handleMotor()
+ 178:main.c        **** {
+ 411              		.loc 1 178 0
+ 412              		.cfi_startproc
+ 413              		@ args = 0, pretend = 0, frame = 0
+ 414              		@ frame_needed = 1, uses_anonymous_args = 0
+ 415 0000 80B5     		push	{r7, lr}
+ 416              		.cfi_def_cfa_offset 8
+ 417              		.cfi_offset 7, -8
+ 418              		.cfi_offset 14, -4
+ 419 0002 00AF     		add	r7, sp, #0
+ 420              		.cfi_def_cfa_register 7
+ 179:main.c        ****     static int motorState = 1;
+ 180:main.c        ****     if(motorFlag)
+ 421              		.loc 1 180 0
+ 422 0004 0F4B     		ldr	r3, .L37
+ 423 0006 1B68     		ldr	r3, [r3]
+ 424 0008 002B     		cmp	r3, #0
+ 425 000a 17D0     		beq	.L36
+ 181:main.c        ****     {
+ 182:main.c        ****         if(motorState)
+ 426              		.loc 1 182 0
+ 427 000c 0E4B     		ldr	r3, .L37+4
+ 428 000e 1B68     		ldr	r3, [r3]
+ 429 0010 002B     		cmp	r3, #0
+ 430 0012 04D0     		beq	.L34
+ 183:main.c        ****         {
+ 184:main.c        ****             PWMLEFT_Stop();
+ 431              		.loc 1 184 0
+ 432 0014 FFF7FEFF 		bl	PWMLEFT_Stop
+ 185:main.c        ****             PWMRIGHT_Stop();
+ 433              		.loc 1 185 0
+ 434 0018 FFF7FEFF 		bl	PWMRIGHT_Stop
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 12
+
+
+ 435 001c 03E0     		b	.L35
+ 436              	.L34:
+ 186:main.c        ****         }
+ 187:main.c        ****         else
+ 188:main.c        ****         {
+ 189:main.c        ****             PWMLEFT_Start();
+ 437              		.loc 1 189 0
+ 438 001e FFF7FEFF 		bl	PWMLEFT_Start
+ 190:main.c        ****             PWMRIGHT_Start();
+ 439              		.loc 1 190 0
+ 440 0022 FFF7FEFF 		bl	PWMRIGHT_Start
+ 441              	.L35:
+ 191:main.c        ****         }
+ 192:main.c        ****         motorState = !motorState;
+ 442              		.loc 1 192 0
+ 443 0026 084B     		ldr	r3, .L37+4
+ 444 0028 1B68     		ldr	r3, [r3]
+ 445 002a 5A42     		rsbs	r2, r3, #0
+ 446 002c 5341     		adcs	r3, r3, r2
+ 447 002e DBB2     		uxtb	r3, r3
+ 448 0030 1A00     		movs	r2, r3
+ 449 0032 054B     		ldr	r3, .L37+4
+ 450 0034 1A60     		str	r2, [r3]
+ 193:main.c        ****         motorFlag = 0;
+ 451              		.loc 1 193 0
+ 452 0036 034B     		ldr	r3, .L37
+ 453 0038 0022     		movs	r2, #0
+ 454 003a 1A60     		str	r2, [r3]
+ 455              	.L36:
+ 194:main.c        ****     } 
+ 195:main.c        **** }
+ 456              		.loc 1 195 0
+ 457 003c C046     		nop
+ 458 003e BD46     		mov	sp, r7
+ 459              		@ sp needed
+ 460 0040 80BD     		pop	{r7, pc}
+ 461              	.L38:
+ 462 0042 C046     		.align	2
+ 463              	.L37:
+ 464 0044 00000000 		.word	motorFlag
+ 465 0048 00000000 		.word	motorState.9399
+ 466              		.cfi_endproc
+ 467              	.LFE42:
+ 468              		.size	handleMotor, .-handleMotor
+ 469              		.section	.text.main,"ax",%progbits
+ 470              		.align	2
+ 471              		.global	main
+ 472              		.code	16
+ 473              		.thumb_func
+ 474              		.type	main, %function
+ 475              	main:
+ 476              	.LFB43:
+ 196:main.c        **** 
+ 197:main.c        **** /*******************************************************************************
+ 198:main.c        **** * Function Name: main
+ 199:main.c        **** ********************************************************************************
+ 200:main.c        **** * Summary:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 13
+
+
+ 201:main.c        **** *       Entry point for the firmware, Starts the system and continuously processes
+ 202:main.c        **** * Application and BLE events.
+ 203:main.c        **** *
+ 204:main.c        **** * Parameters:
+ 205:main.c        **** *  void
+ 206:main.c        **** *
+ 207:main.c        **** * Return:
+ 208:main.c        **** *  int
+ 209:main.c        **** *
+ 210:main.c        **** *******************************************************************************/
+ 211:main.c        **** int main()
+ 212:main.c        **** {
+ 477              		.loc 1 212 0
+ 478              		.cfi_startproc
+ 479              		@ args = 0, pretend = 0, frame = 0
+ 480              		@ frame_needed = 1, uses_anonymous_args = 0
+ 481 0000 80B5     		push	{r7, lr}
+ 482              		.cfi_def_cfa_offset 8
+ 483              		.cfi_offset 7, -8
+ 484              		.cfi_offset 14, -4
+ 485 0002 00AF     		add	r7, sp, #0
+ 486              		.cfi_def_cfa_register 7
+ 213:main.c        ****     /* Initialize system */	
+ 214:main.c        **** 	InitializeSystem();
+ 487              		.loc 1 214 0
+ 488 0004 FFF7FEFF 		bl	InitializeSystem
+ 489              	.L40:
+ 215:main.c        **** 	
+ 216:main.c        **** 	#ifdef DEBUG_ENABLED
+ 217:main.c        **** 		UART_UartPutString("Sytem Started ");
+ 218:main.c        **** 		UART_UartPutCRLF(' ');
+ 219:main.c        **** 	#endif
+ 220:main.c        **** 	
+ 221:main.c        ****     for(;;)
+ 222:main.c        ****     {
+ 223:main.c        **** 		/* Process BLE Events. This function generates the respective 
+ 224:main.c        **** 		* events to application layer */
+ 225:main.c        **** 		CyBle_ProcessEvents();
+ 490              		.loc 1 225 0 discriminator 1
+ 491 0008 FFF7FEFF 		bl	CyBle_ProcessEvents
+ 226:main.c        **** 
+ 227:main.c        **** 		/* If flag is set, then switch the GAP role between Peripheral and 
+ 228:main.c        **** 		* Central. This function disconnects existing connection, if any, 
+ 229:main.c        **** 		* before switching role. Depending on switched role, the system will
+ 230:main.c        **** 		* either start scanning or start advertisement */
+ 231:main.c        **** 		SwitchRole();
+ 492              		.loc 1 231 0 discriminator 1
+ 493 000c FFF7FEFF 		bl	SwitchRole
+ 232:main.c        **** 		
+ 233:main.c        **** 		/* If a valid node is found, then this function will initiate a connection 
+ 234:main.c        **** 		* to that node. */
+ 235:main.c        **** 		ConnectToPeripheralDevice();
+ 494              		.loc 1 235 0 discriminator 1
+ 495 0010 FFF7FEFF 		bl	ConnectToPeripheralDevice
+ 236:main.c        **** 		
+ 237:main.c        **** 		/* This function will restart scanning when earlier connection has been
+ 238:main.c        **** 		* disconnected. This function also checks internal counter and sets flag to
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 14
+
+
+ 239:main.c        **** 		* switch role from Central to Peripheral when the count is above set value. */
+ 240:main.c        **** 		RestartCentralScanning();
+ 496              		.loc 1 240 0 discriminator 1
+ 497 0014 FFF7FEFF 		bl	RestartCentralScanning
+ 241:main.c        ****                
+ 242:main.c        ****     }
+ 498              		.loc 1 242 0 discriminator 1
+ 499 0018 F6E7     		b	.L40
+ 500              		.cfi_endproc
+ 501              	.LFE43:
+ 502              		.size	main, .-main
+ 503 001a C046     		.section	.rodata
+ 504              		.align	2
+ 505              	.LC19:
+ 506 0000 2D2D2D2D 		.ascii	"--------------------------Mesh Flood---------------"
+ 506      2D2D2D2D 
+ 506      2D2D2D2D 
+ 506      2D2D2D2D 
+ 506      2D2D2D2D 
+ 507 0033 2D2D2D2D 		.ascii	"---------------------------\000"
+ 507      2D2D2D2D 
+ 507      2D2D2D2D 
+ 507      2D2D2D2D 
+ 507      2D2D2D2D 
+ 508              		.section	.text.InitializeSystem,"ax",%progbits
+ 509              		.align	2
+ 510              		.global	InitializeSystem
+ 511              		.code	16
+ 512              		.thumb_func
+ 513              		.type	InitializeSystem, %function
+ 514              	InitializeSystem:
+ 515              	.LFB44:
+ 243:main.c        **** }
+ 244:main.c        **** 
+ 245:main.c        **** /*******************************************************************************
+ 246:main.c        **** * Function Name: InitializeSystem
+ 247:main.c        **** ********************************************************************************
+ 248:main.c        **** * Summary:
+ 249:main.c        **** *       Starts the components in the project and registers BLE event handler 
+ 250:main.c        **** * function. It also modifies the advertisement packet and appends data counter
+ 251:main.c        **** * at its end.
+ 252:main.c        **** *
+ 253:main.c        **** * Parameters:
+ 254:main.c        **** *  void
+ 255:main.c        **** *
+ 256:main.c        **** * Return:
+ 257:main.c        **** *  void
+ 258:main.c        **** *
+ 259:main.c        **** *******************************************************************************/
+ 260:main.c        **** void InitializeSystem(void)
+ 261:main.c        **** {
+ 516              		.loc 1 261 0
+ 517              		.cfi_startproc
+ 518              		@ args = 0, pretend = 0, frame = 0
+ 519              		@ frame_needed = 1, uses_anonymous_args = 0
+ 520 0000 80B5     		push	{r7, lr}
+ 521              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 15
+
+
+ 522              		.cfi_offset 7, -8
+ 523              		.cfi_offset 14, -4
+ 524 0002 00AF     		add	r7, sp, #0
+ 525              		.cfi_def_cfa_register 7
+ 262:main.c        **** 	/* Enable global interrupts. */
+ 263:main.c        **** 	CyGlobalIntEnable;
+ 526              		.loc 1 263 0
+ 527              		.syntax divided
+ 528              	@ 263 "main.c" 1
+ 529 0004 62B6     		CPSIE   i
+ 530              	@ 0 "" 2
+ 264:main.c        **** 	
+ 265:main.c        **** 	/* Start BLE component and Register the generic Event callback function */
+ 266:main.c        **** 	CyBle_Start(GenericEventHandler);
+ 531              		.loc 1 266 0
+ 532              		.thumb
+ 533              		.syntax unified
+ 534 0006 394B     		ldr	r3, .L43
+ 535 0008 1800     		movs	r0, r3
+ 536 000a FFF7FEFF 		bl	CyBle_Start
+ 267:main.c        ****     
+ 268:main.c        ****     swint_StartEx(swisr);
+ 537              		.loc 1 268 0
+ 538 000e 384B     		ldr	r3, .L43+4
+ 539 0010 1800     		movs	r0, r3
+ 540 0012 FFF7FEFF 		bl	swint_StartEx
+ 269:main.c        **** 	
+ 270:main.c        **** 	/* Start the PrISM component and configure drive mode of LED pins to be
+ 271:main.c        **** 	* initially OFF*/
+ 272:main.c        **** 	PrISM_1_Start();
+ 541              		.loc 1 272 0
+ 542 0016 FFF7FEFF 		bl	PrISM_1_Start
+ 273:main.c        **** 	PrISM_2_Start();
+ 543              		.loc 1 273 0
+ 544 001a FFF7FEFF 		bl	PrISM_2_Start
+ 274:main.c        ****     PWMLEFT_Start();
+ 545              		.loc 1 274 0
+ 546 001e FFF7FEFF 		bl	PWMLEFT_Start
+ 275:main.c        ****     PWMRIGHT_Start();
+ 547              		.loc 1 275 0
+ 548 0022 FFF7FEFF 		bl	PWMRIGHT_Start
+ 276:main.c        ****     setSpeed(LEFT,0);
+ 549              		.loc 1 276 0
+ 550 0026 0021     		movs	r1, #0
+ 551 0028 0020     		movs	r0, #0
+ 552 002a FFF7FEFF 		bl	setSpeed
+ 277:main.c        ****     setSpeed(RIGHT,0);
+ 553              		.loc 1 277 0
+ 554 002e 0021     		movs	r1, #0
+ 555 0030 0120     		movs	r0, #1
+ 556 0032 FFF7FEFF 		bl	setSpeed
+ 278:main.c        **** 	
+ 279:main.c        **** 	PrISM_1_WritePulse0(255);
+ 557              		.loc 1 279 0
+ 558 0036 FF20     		movs	r0, #255
+ 559 0038 FFF7FEFF 		bl	PrISM_1_WritePulse0
+ 280:main.c        **** 	PrISM_1_WritePulse1(255);
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 16
+
+
+ 560              		.loc 1 280 0
+ 561 003c FF20     		movs	r0, #255
+ 562 003e FFF7FEFF 		bl	PrISM_1_WritePulse1
+ 281:main.c        **** 	PrISM_2_WritePulse0(0);
+ 563              		.loc 1 281 0
+ 564 0042 0020     		movs	r0, #0
+ 565 0044 FFF7FEFF 		bl	PrISM_2_WritePulse0
+ 282:main.c        ****     
+ 283:main.c        ****     tachPwm_Start();
+ 566              		.loc 1 283 0
+ 567 0048 FFF7FEFF 		bl	tachPwm_Start
+ 284:main.c        ****     tachTimer_StartEx(tachISR);
+ 568              		.loc 1 284 0
+ 569 004c 294B     		ldr	r3, .L43+8
+ 570 004e 1800     		movs	r0, r3
+ 571 0050 FFF7FEFF 		bl	tachTimer_StartEx
+ 285:main.c        **** 	
+ 286:main.c        **** 	RED_SetDriveMode(RED_DM_STRONG);
+ 572              		.loc 1 286 0
+ 573 0054 0620     		movs	r0, #6
+ 574 0056 FFF7FEFF 		bl	RED_SetDriveMode
+ 287:main.c        **** 	GREEN_SetDriveMode(GREEN_DM_STRONG);
+ 575              		.loc 1 287 0
+ 576 005a 0620     		movs	r0, #6
+ 577 005c FFF7FEFF 		bl	GREEN_SetDriveMode
+ 288:main.c        **** 	BLUE_SetDriveMode(BLUE_DM_STRONG);
+ 578              		.loc 1 288 0
+ 579 0060 0620     		movs	r0, #6
+ 580 0062 FFF7FEFF 		bl	BLUE_SetDriveMode
+ 289:main.c        **** 	
+ 290:main.c        **** 	/* Configure the Watchdog (WDT) timer for 100 millisecond timing */
+ 291:main.c        **** 	InitializeWatchdog(WATCHDOG_COUNT_VAL);
+ 581              		.loc 1 291 0
+ 582 0066 244B     		ldr	r3, .L43+12
+ 583 0068 1800     		movs	r0, r3
+ 584 006a FFF7FEFF 		bl	InitializeWatchdog
+ 292:main.c        **** 
+ 293:main.c        **** 	#ifdef ENABLE_ADV_DATA_COUNTER
+ 294:main.c        **** 	new_advData = *cyBle_discoveryModeInfo.advData;
+ 585              		.loc 1 294 0
+ 586 006e 234B     		ldr	r3, .L43+16
+ 587 0070 9B68     		ldr	r3, [r3, #8]
+ 588 0072 234A     		ldr	r2, .L43+20
+ 589 0074 1000     		movs	r0, r2
+ 590 0076 1900     		movs	r1, r3
+ 591 0078 2023     		movs	r3, #32
+ 592 007a 1A00     		movs	r2, r3
+ 593 007c FFF7FEFF 		bl	memcpy
+ 295:main.c        **** 	
+ 296:main.c        **** 	if( cyBle_discoveryModeInfo.advData->advDataLen < 29)
+ 594              		.loc 1 296 0
+ 595 0080 1E4B     		ldr	r3, .L43+16
+ 596 0082 9B68     		ldr	r3, [r3, #8]
+ 597 0084 DB7F     		ldrb	r3, [r3, #31]
+ 598 0086 1C2B     		cmp	r3, #28
+ 599 0088 15D8     		bhi	.L42
+ 297:main.c        **** 	{
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 17
+
+
+ 298:main.c        **** 		/* Initialize the DataCounter data in advertisement packet. This is custom data in 
+ 299:main.c        **** 		* ADV packet and used to track whether the RGB LED data is latest or not */
+ 300:main.c        **** 		new_advData.advData[cyBle_discoveryModeInfo.advData->advDataLen] = CUSTOM_ADV_DATA_MARKER;	
+ 600              		.loc 1 300 0
+ 601 008a 1C4B     		ldr	r3, .L43+16
+ 602 008c 9B68     		ldr	r3, [r3, #8]
+ 603 008e DB7F     		ldrb	r3, [r3, #31]
+ 604 0090 1A00     		movs	r2, r3
+ 605 0092 1B4B     		ldr	r3, .L43+20
+ 606 0094 0121     		movs	r1, #1
+ 607 0096 9954     		strb	r1, [r3, r2]
+ 301:main.c        **** 		new_advData.advData[cyBle_discoveryModeInfo.advData->advDataLen+1] = dataADVCounter;
+ 608              		.loc 1 301 0
+ 609 0098 184B     		ldr	r3, .L43+16
+ 610 009a 9B68     		ldr	r3, [r3, #8]
+ 611 009c DB7F     		ldrb	r3, [r3, #31]
+ 612 009e 0133     		adds	r3, r3, #1
+ 613 00a0 184A     		ldr	r2, .L43+24
+ 614 00a2 1178     		ldrb	r1, [r2]
+ 615 00a4 164A     		ldr	r2, .L43+20
+ 616 00a6 D154     		strb	r1, [r2, r3]
+ 302:main.c        **** 		new_advData.advDataLen = cyBle_discoveryModeInfo.advData->advDataLen+2;
+ 617              		.loc 1 302 0
+ 618 00a8 144B     		ldr	r3, .L43+16
+ 619 00aa 9B68     		ldr	r3, [r3, #8]
+ 620 00ac DB7F     		ldrb	r3, [r3, #31]
+ 621 00ae 0233     		adds	r3, r3, #2
+ 622 00b0 DAB2     		uxtb	r2, r3
+ 623 00b2 134B     		ldr	r3, .L43+20
+ 624 00b4 DA77     		strb	r2, [r3, #31]
+ 625              	.L42:
+ 303:main.c        **** 	}
+ 304:main.c        **** 	
+ 305:main.c        **** 	/* Assign the new ADV data to stack */
+ 306:main.c        **** 	cyBle_discoveryModeInfo.advData = &new_advData;
+ 626              		.loc 1 306 0
+ 627 00b6 114B     		ldr	r3, .L43+16
+ 628 00b8 114A     		ldr	r2, .L43+20
+ 629 00ba 9A60     		str	r2, [r3, #8]
+ 307:main.c        **** 	#endif
+ 308:main.c        **** 		
+ 309:main.c        **** 	/* Provide a color pusle on RGB LED to indicate startup */
+ 310:main.c        **** 	PrISM_1_WritePulse1(128);
+ 630              		.loc 1 310 0
+ 631 00bc 8020     		movs	r0, #128
+ 632 00be FFF7FEFF 		bl	PrISM_1_WritePulse1
+ 311:main.c        **** 	CyDelay(20);
+ 633              		.loc 1 311 0
+ 634 00c2 1420     		movs	r0, #20
+ 635 00c4 FFF7FEFF 		bl	CyDelay
+ 312:main.c        **** 	PrISM_1_WritePulse1(255);
+ 636              		.loc 1 312 0
+ 637 00c8 FF20     		movs	r0, #255
+ 638 00ca FFF7FEFF 		bl	PrISM_1_WritePulse1
+ 313:main.c        **** 	handleMotor();
+ 639              		.loc 1 313 0
+ 640 00ce FFF7FEFF 		bl	handleMotor
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 18
+
+
+ 314:main.c        ****             
+ 315:main.c        **** 	//#ifdef DEBUG_ENABLED
+ 316:main.c        ****     UART_Start();
+ 641              		.loc 1 316 0
+ 642 00d2 FFF7FEFF 		bl	UART_Start
+ 317:main.c        **** 	UART_UartPutString("--------------------------Mesh Flood------------------------------------------
+ 643              		.loc 1 317 0
+ 644 00d6 0C4B     		ldr	r3, .L43+28
+ 645 00d8 1800     		movs	r0, r3
+ 646 00da FFF7FEFF 		bl	UART_UartPutString
+ 318:main.c        **** 	UART_UartPutCRLF(' ');
+ 647              		.loc 1 318 0
+ 648 00de 2020     		movs	r0, #32
+ 649 00e0 FFF7FEFF 		bl	UART_UartPutCRLF
+ 319:main.c        **** 	//#endif
+ 320:main.c        **** }
+ 650              		.loc 1 320 0
+ 651 00e4 C046     		nop
+ 652 00e6 BD46     		mov	sp, r7
+ 653              		@ sp needed
+ 654 00e8 80BD     		pop	{r7, pc}
+ 655              	.L44:
+ 656 00ea C046     		.align	2
+ 657              	.L43:
+ 658 00ec 00000000 		.word	GenericEventHandler
+ 659 00f0 00000000 		.word	swisr
+ 660 00f4 00000000 		.word	tachISR
+ 661 00f8 CC0C0000 		.word	3276
+ 662 00fc 00000000 		.word	cyBle_discoveryModeInfo
+ 663 0100 00000000 		.word	new_advData
+ 664 0104 00000000 		.word	dataADVCounter
+ 665 0108 00000000 		.word	.LC19
+ 666              		.cfi_endproc
+ 667              	.LFE44:
+ 668              		.size	InitializeSystem, .-InitializeSystem
+ 669              		.section	.text.UpdateRGBled,"ax",%progbits
+ 670              		.align	2
+ 671              		.global	UpdateRGBled
+ 672              		.code	16
+ 673              		.thumb_func
+ 674              		.type	UpdateRGBled, %function
+ 675              	UpdateRGBled:
+ 676              	.LFB45:
+ 321:main.c        **** 
+ 322:main.c        **** /*******************************************************************************
+ 323:main.c        **** * Function Name: UpdateRGBled
+ 324:main.c        **** ********************************************************************************
+ 325:main.c        **** * Summary:
+ 326:main.c        **** *        Update the RGB LED color by reconfiguring PrISM component. This function 
+ 327:main.c        **** * is valid for PSoC 4 BLE parts and not PROC BLE, as PRoC BLE does not have UDBs
+ 328:main.c        **** * that makes up the PrISM component. To replace this with software PrISM, refer to
+ 329:main.c        **** * CY8CKIT-042-BLE Pioneer Kit example project, PRoC_BLE_CapSense_Slider_LED, from
+ 330:main.c        **** * http://www.cypress.com/CY8CKIT-042-BLE
+ 331:main.c        **** *
+ 332:main.c        **** * Parameters:
+ 333:main.c        **** *  rgb_led_data: array storing the RGB and Intensity vlaue
+ 334:main.c        **** *  len: length of the array.
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 19
+
+
+ 335:main.c        **** *
+ 336:main.c        **** * Return:
+ 337:main.c        **** *  void
+ 338:main.c        **** *
+ 339:main.c        **** *******************************************************************************/
+ 340:main.c        **** void UpdateRGBled(uint8 * rgb_led_data, uint8 len)
+ 341:main.c        **** {
+ 677              		.loc 1 341 0
+ 678              		.cfi_startproc
+ 679              		@ args = 0, pretend = 0, frame = 16
+ 680              		@ frame_needed = 1, uses_anonymous_args = 0
+ 681 0000 80B5     		push	{r7, lr}
+ 682              		.cfi_def_cfa_offset 8
+ 683              		.cfi_offset 7, -8
+ 684              		.cfi_offset 14, -4
+ 685 0002 84B0     		sub	sp, sp, #16
+ 686              		.cfi_def_cfa_offset 24
+ 687 0004 00AF     		add	r7, sp, #0
+ 688              		.cfi_def_cfa_register 7
+ 689 0006 7860     		str	r0, [r7, #4]
+ 690 0008 0A00     		movs	r2, r1
+ 691 000a FB1C     		adds	r3, r7, #3
+ 692 000c 1A70     		strb	r2, [r3]
+ 342:main.c        **** 	uint8 calc_red, calc_green, calc_blue;
+ 343:main.c        **** 	
+ 344:main.c        **** 	if(len == RGB_LED_DATA_LEN)
+ 693              		.loc 1 344 0
+ 694 000e FB1C     		adds	r3, r7, #3
+ 695 0010 1B78     		ldrb	r3, [r3]
+ 696 0012 022B     		cmp	r3, #2
+ 697 0014 28D1     		bne	.L47
+ 345:main.c        **** 	{
+ 346:main.c        **** 		/* If a valid length packet has been sent, calculate the intensity of each of
+ 347:main.c        **** 		* R, G and B color and update the PrISM module */
+ 348:main.c        **** 		calc_red = (uint8)(((uint16)rgb_led_data[RGB_RED_INDEX]));
+ 698              		.loc 1 348 0
+ 699 0016 0F23     		movs	r3, #15
+ 700 0018 FB18     		adds	r3, r7, r3
+ 701 001a 7A68     		ldr	r2, [r7, #4]
+ 702 001c 1278     		ldrb	r2, [r2]
+ 703 001e 1A70     		strb	r2, [r3]
+ 349:main.c        **** 		calc_green = (uint8)(((uint16)rgb_led_data[RGB_GREEN_INDEX]));
+ 704              		.loc 1 349 0
+ 705 0020 7B68     		ldr	r3, [r7, #4]
+ 706 0022 5A1C     		adds	r2, r3, #1
+ 707 0024 0E23     		movs	r3, #14
+ 708 0026 FB18     		adds	r3, r7, r3
+ 709 0028 1278     		ldrb	r2, [r2]
+ 710 002a 1A70     		strb	r2, [r3]
+ 350:main.c        **** 	//	calc_blue = (uint8)(((uint16)rgb_led_data[RGB_BLUE_INDEX]*rgb_led_data[RGB_INTENSITY_INDEX])/RG
+ 351:main.c        **** 		
+ 352:main.c        **** 
+ 353:main.c        ****         setSpeed(LEFT, calc_red);
+ 711              		.loc 1 353 0
+ 712 002c 0F23     		movs	r3, #15
+ 713 002e FB18     		adds	r3, r7, r3
+ 714 0030 1B78     		ldrb	r3, [r3]
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 20
+
+
+ 715 0032 1900     		movs	r1, r3
+ 716 0034 0020     		movs	r0, #0
+ 717 0036 FFF7FEFF 		bl	setSpeed
+ 354:main.c        ****         setSpeed(RIGHT, calc_green);
+ 718              		.loc 1 354 0
+ 719 003a 0E23     		movs	r3, #14
+ 720 003c FB18     		adds	r3, r7, r3
+ 721 003e 1B78     		ldrb	r3, [r3]
+ 722 0040 1900     		movs	r1, r3
+ 723 0042 0120     		movs	r0, #1
+ 724 0044 FFF7FEFF 		bl	setSpeed
+ 355:main.c        ****         
+ 356:main.c        ****         PrISM_1_WritePulse0(RGB_LED_MAX_VAL - calc_red);
+ 725              		.loc 1 356 0
+ 726 0048 0F23     		movs	r3, #15
+ 727 004a FB18     		adds	r3, r7, r3
+ 728 004c 1B78     		ldrb	r3, [r3]
+ 729 004e DB43     		mvns	r3, r3
+ 730 0050 DBB2     		uxtb	r3, r3
+ 731 0052 1800     		movs	r0, r3
+ 732 0054 FFF7FEFF 		bl	PrISM_1_WritePulse0
+ 357:main.c        **** 		PrISM_1_WritePulse1(RGB_LED_MAX_VAL - calc_green);
+ 733              		.loc 1 357 0
+ 734 0058 0E23     		movs	r3, #14
+ 735 005a FB18     		adds	r3, r7, r3
+ 736 005c 1B78     		ldrb	r3, [r3]
+ 737 005e DB43     		mvns	r3, r3
+ 738 0060 DBB2     		uxtb	r3, r3
+ 739 0062 1800     		movs	r0, r3
+ 740 0064 FFF7FEFF 		bl	PrISM_1_WritePulse1
+ 741              	.L47:
+ 358:main.c        **** 		//PrISM_2_WritePulse0(RGB_LED_MAX_VAL - calc_blue);
+ 359:main.c        ****         		
+ 360:main.c        **** 		#ifdef DEBUG_ENABLED
+ 361:main.c        **** 		UART_UartPutString("PrISM Updated \r\n\n");
+ 362:main.c        ****         PrintNum(rgb_led_data[RGB_RED_INDEX]);
+ 363:main.c        ****         UART_UartPutCRLF(' ');
+ 364:main.c        ****         PrintNum(rgb_led_data[RGB_GREEN_INDEX]);
+ 365:main.c        ****         UART_UartPutCRLF(' ');
+ 366:main.c        ****         PrintNum(rgb_led_data[RGB_BLUE_INDEX]);
+ 367:main.c        ****         UART_UartPutCRLF(' ');
+ 368:main.c        ****         PrintNum(rgb_led_data[RGB_INTENSITY_INDEX]);
+ 369:main.c        **** 		UART_UartPutCRLF(' ');
+ 370:main.c        **** 		#endif
+ 371:main.c        **** 	}
+ 372:main.c        **** }
+ 742              		.loc 1 372 0
+ 743 0068 C046     		nop
+ 744 006a BD46     		mov	sp, r7
+ 745 006c 04B0     		add	sp, sp, #16
+ 746              		@ sp needed
+ 747 006e 80BD     		pop	{r7, pc}
+ 748              		.cfi_endproc
+ 749              	.LFE45:
+ 750              		.size	UpdateRGBled, .-UpdateRGBled
+ 751              		.data
+ 752              		.align	2
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 21
+
+
+ 753              		.type	motorState.9399, %object
+ 754              		.size	motorState.9399, 4
+ 755              	motorState.9399:
+ 756 0000 01000000 		.word	1
+ 757              		.text
+ 758              	.Letext0:
+ 759              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 760              		.file 3 "Generated_Source\\PSoC4/BLE_Stack.h"
+ 761              		.file 4 "Generated_Source\\PSoC4/BLE_StackGap.h"
+ 762              		.file 5 "Generated_Source\\PSoC4/BLE_StackGatt.h"
+ 763              		.file 6 "Generated_Source\\PSoC4/BLE_StackGattServer.h"
+ 764              		.file 7 "Generated_Source\\PSoC4/BLE_eventHandler.h"
+ 765              		.file 8 "./main.h"
+ 766              		.file 9 "Generated_Source\\PSoC4/BLE.h"
+ 767              		.section	.debug_info,"",%progbits
+ 768              	.Ldebug_info0:
+ 769 0000 91070000 		.4byte	0x791
+ 770 0004 0400     		.2byte	0x4
+ 771 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 772 000a 04       		.byte	0x4
+ 773 000b 01       		.uleb128 0x1
+ 774 000c 15070000 		.4byte	.LASF169
+ 775 0010 0C       		.byte	0xc
+ 776 0011 D2060000 		.4byte	.LASF170
+ 777 0015 2B0F0000 		.4byte	.LASF171
+ 778 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 779 001d 00000000 		.4byte	0
+ 780 0021 00000000 		.4byte	.Ldebug_line0
+ 781 0025 02       		.uleb128 0x2
+ 782 0026 01       		.byte	0x1
+ 783 0027 06       		.byte	0x6
+ 784 0028 A5020000 		.4byte	.LASF0
+ 785 002c 02       		.uleb128 0x2
+ 786 002d 01       		.byte	0x1
+ 787 002e 08       		.byte	0x8
+ 788 002f 730A0000 		.4byte	.LASF1
+ 789 0033 02       		.uleb128 0x2
+ 790 0034 02       		.byte	0x2
+ 791 0035 05       		.byte	0x5
+ 792 0036 D40A0000 		.4byte	.LASF2
+ 793 003a 02       		.uleb128 0x2
+ 794 003b 02       		.byte	0x2
+ 795 003c 07       		.byte	0x7
+ 796 003d 1A060000 		.4byte	.LASF3
+ 797 0041 02       		.uleb128 0x2
+ 798 0042 04       		.byte	0x4
+ 799 0043 05       		.byte	0x5
+ 800 0044 990E0000 		.4byte	.LASF4
+ 801 0048 02       		.uleb128 0x2
+ 802 0049 04       		.byte	0x4
+ 803 004a 07       		.byte	0x7
+ 804 004b 46050000 		.4byte	.LASF5
+ 805 004f 02       		.uleb128 0x2
+ 806 0050 08       		.byte	0x8
+ 807 0051 05       		.byte	0x5
+ 808 0052 D5030000 		.4byte	.LASF6
+ 809 0056 02       		.uleb128 0x2
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 22
+
+
+ 810 0057 08       		.byte	0x8
+ 811 0058 07       		.byte	0x7
+ 812 0059 93010000 		.4byte	.LASF7
+ 813 005d 03       		.uleb128 0x3
+ 814 005e 04       		.byte	0x4
+ 815 005f 05       		.byte	0x5
+ 816 0060 696E7400 		.ascii	"int\000"
+ 817 0064 02       		.uleb128 0x2
+ 818 0065 04       		.byte	0x4
+ 819 0066 07       		.byte	0x7
+ 820 0067 14050000 		.4byte	.LASF8
+ 821 006b 04       		.uleb128 0x4
+ 822 006c C3030000 		.4byte	.LASF9
+ 823 0070 02       		.byte	0x2
+ 824 0071 FC01     		.2byte	0x1fc
+ 825 0073 2C000000 		.4byte	0x2c
+ 826 0077 04       		.uleb128 0x4
+ 827 0078 810A0000 		.4byte	.LASF10
+ 828 007c 02       		.byte	0x2
+ 829 007d FD01     		.2byte	0x1fd
+ 830 007f 3A000000 		.4byte	0x3a
+ 831 0083 02       		.uleb128 0x2
+ 832 0084 04       		.byte	0x4
+ 833 0085 04       		.byte	0x4
+ 834 0086 210A0000 		.4byte	.LASF11
+ 835 008a 02       		.uleb128 0x2
+ 836 008b 08       		.byte	0x8
+ 837 008c 04       		.byte	0x4
+ 838 008d 02040000 		.4byte	.LASF12
+ 839 0091 02       		.uleb128 0x2
+ 840 0092 01       		.byte	0x1
+ 841 0093 08       		.byte	0x8
+ 842 0094 280C0000 		.4byte	.LASF13
+ 843 0098 05       		.uleb128 0x5
+ 844 0099 77000000 		.4byte	0x77
+ 845 009d 02       		.uleb128 0x2
+ 846 009e 08       		.byte	0x8
+ 847 009f 04       		.byte	0x4
+ 848 00a0 1C0C0000 		.4byte	.LASF14
+ 849 00a4 02       		.uleb128 0x2
+ 850 00a5 04       		.byte	0x4
+ 851 00a6 07       		.byte	0x7
+ 852 00a7 99080000 		.4byte	.LASF15
+ 853 00ab 06       		.uleb128 0x6
+ 854 00ac 01       		.byte	0x1
+ 855 00ad 2C000000 		.4byte	0x2c
+ 856 00b1 03       		.byte	0x3
+ 857 00b2 3501     		.2byte	0x135
+ 858 00b4 69020000 		.4byte	0x269
+ 859 00b8 07       		.uleb128 0x7
+ 860 00b9 2D060000 		.4byte	.LASF16
+ 861 00bd 00       		.byte	0
+ 862 00be 07       		.uleb128 0x7
+ 863 00bf B1020000 		.4byte	.LASF17
+ 864 00c3 01       		.byte	0x1
+ 865 00c4 07       		.uleb128 0x7
+ 866 00c5 77010000 		.4byte	.LASF18
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 23
+
+
+ 867 00c9 02       		.byte	0x2
+ 868 00ca 07       		.uleb128 0x7
+ 869 00cb 090D0000 		.4byte	.LASF19
+ 870 00cf 03       		.byte	0x3
+ 871 00d0 07       		.uleb128 0x7
+ 872 00d1 C7010000 		.4byte	.LASF20
+ 873 00d5 04       		.byte	0x4
+ 874 00d6 07       		.uleb128 0x7
+ 875 00d7 34010000 		.4byte	.LASF21
+ 876 00db 05       		.byte	0x5
+ 877 00dc 07       		.uleb128 0x7
+ 878 00dd C4020000 		.4byte	.LASF22
+ 879 00e1 06       		.byte	0x6
+ 880 00e2 07       		.uleb128 0x7
+ 881 00e3 E0070000 		.4byte	.LASF23
+ 882 00e7 20       		.byte	0x20
+ 883 00e8 07       		.uleb128 0x7
+ 884 00e9 21030000 		.4byte	.LASF24
+ 885 00ed 21       		.byte	0x21
+ 886 00ee 07       		.uleb128 0x7
+ 887 00ef 8F060000 		.4byte	.LASF25
+ 888 00f3 22       		.byte	0x22
+ 889 00f4 07       		.uleb128 0x7
+ 890 00f5 E30C0000 		.4byte	.LASF26
+ 891 00f9 23       		.byte	0x23
+ 892 00fa 07       		.uleb128 0x7
+ 893 00fb 6D090000 		.4byte	.LASF27
+ 894 00ff 24       		.byte	0x24
+ 895 0100 07       		.uleb128 0x7
+ 896 0101 E6080000 		.4byte	.LASF28
+ 897 0105 25       		.byte	0x25
+ 898 0106 07       		.uleb128 0x7
+ 899 0107 9B030000 		.4byte	.LASF29
+ 900 010b 26       		.byte	0x26
+ 901 010c 07       		.uleb128 0x7
+ 902 010d B3060000 		.4byte	.LASF30
+ 903 0111 27       		.byte	0x27
+ 904 0112 07       		.uleb128 0x7
+ 905 0113 4C0C0000 		.4byte	.LASF31
+ 906 0117 28       		.byte	0x28
+ 907 0118 07       		.uleb128 0x7
+ 908 0119 32020000 		.4byte	.LASF32
+ 909 011d 29       		.byte	0x29
+ 910 011e 07       		.uleb128 0x7
+ 911 011f A5000000 		.4byte	.LASF33
+ 912 0123 2A       		.byte	0x2a
+ 913 0124 07       		.uleb128 0x7
+ 914 0125 ED020000 		.4byte	.LASF34
+ 915 0129 2B       		.byte	0x2b
+ 916 012a 07       		.uleb128 0x7
+ 917 012b 490E0000 		.4byte	.LASF35
+ 918 012f 2C       		.byte	0x2c
+ 919 0130 07       		.uleb128 0x7
+ 920 0131 5A020000 		.4byte	.LASF36
+ 921 0135 2D       		.byte	0x2d
+ 922 0136 07       		.uleb128 0x7
+ 923 0137 880A0000 		.4byte	.LASF37
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 24
+
+
+ 924 013b 2E       		.byte	0x2e
+ 925 013c 07       		.uleb128 0x7
+ 926 013d 220D0000 		.4byte	.LASF38
+ 927 0141 2F       		.byte	0x2f
+ 928 0142 07       		.uleb128 0x7
+ 929 0143 4C090000 		.4byte	.LASF39
+ 930 0147 30       		.byte	0x30
+ 931 0148 07       		.uleb128 0x7
+ 932 0149 CD0E0000 		.4byte	.LASF40
+ 933 014d 31       		.byte	0x31
+ 934 014e 07       		.uleb128 0x7
+ 935 014f 2B090000 		.4byte	.LASF41
+ 936 0153 32       		.byte	0x32
+ 937 0154 07       		.uleb128 0x7
+ 938 0155 CF0B0000 		.4byte	.LASF42
+ 939 0159 33       		.byte	0x33
+ 940 015a 07       		.uleb128 0x7
+ 941 015b 58050000 		.4byte	.LASF43
+ 942 015f 34       		.byte	0x34
+ 943 0160 07       		.uleb128 0x7
+ 944 0161 C9040000 		.4byte	.LASF44
+ 945 0165 35       		.byte	0x35
+ 946 0166 07       		.uleb128 0x7
+ 947 0167 84040000 		.4byte	.LASF45
+ 948 016b 36       		.byte	0x36
+ 949 016c 07       		.uleb128 0x7
+ 950 016d 26080000 		.4byte	.LASF46
+ 951 0171 37       		.byte	0x37
+ 952 0172 07       		.uleb128 0x7
+ 953 0173 B50B0000 		.4byte	.LASF47
+ 954 0177 40       		.byte	0x40
+ 955 0178 07       		.uleb128 0x7
+ 956 0179 A3070000 		.4byte	.LASF48
+ 957 017d 41       		.byte	0x41
+ 958 017e 07       		.uleb128 0x7
+ 959 017f 0D0F0000 		.4byte	.LASF49
+ 960 0183 42       		.byte	0x42
+ 961 0184 07       		.uleb128 0x7
+ 962 0185 580D0000 		.4byte	.LASF50
+ 963 0189 43       		.byte	0x43
+ 964 018a 07       		.uleb128 0x7
+ 965 018b 9A050000 		.4byte	.LASF51
+ 966 018f 44       		.byte	0x44
+ 967 0190 07       		.uleb128 0x7
+ 968 0191 FA090000 		.4byte	.LASF52
+ 969 0195 45       		.byte	0x45
+ 970 0196 07       		.uleb128 0x7
+ 971 0197 E8060000 		.4byte	.LASF53
+ 972 019b 46       		.byte	0x46
+ 973 019c 07       		.uleb128 0x7
+ 974 019d 44060000 		.4byte	.LASF54
+ 975 01a1 47       		.byte	0x47
+ 976 01a2 07       		.uleb128 0x7
+ 977 01a3 220E0000 		.4byte	.LASF55
+ 978 01a7 48       		.byte	0x48
+ 979 01a8 07       		.uleb128 0x7
+ 980 01a9 38030000 		.4byte	.LASF56
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 25
+
+
+ 981 01ad 49       		.byte	0x49
+ 982 01ae 07       		.uleb128 0x7
+ 983 01af 00000000 		.4byte	.LASF57
+ 984 01b3 4A       		.byte	0x4a
+ 985 01b4 07       		.uleb128 0x7
+ 986 01b5 2D0C0000 		.4byte	.LASF58
+ 987 01b9 4B       		.byte	0x4b
+ 988 01ba 07       		.uleb128 0x7
+ 989 01bb 80050000 		.4byte	.LASF59
+ 990 01bf 4C       		.byte	0x4c
+ 991 01c0 07       		.uleb128 0x7
+ 992 01c1 11090000 		.4byte	.LASF60
+ 993 01c5 4D       		.byte	0x4d
+ 994 01c6 07       		.uleb128 0x7
+ 995 01c7 5B030000 		.4byte	.LASF61
+ 996 01cb 4E       		.byte	0x4e
+ 997 01cc 07       		.uleb128 0x7
+ 998 01cd 2B0B0000 		.4byte	.LASF62
+ 999 01d1 4F       		.byte	0x4f
+ 1000 01d2 07       		.uleb128 0x7
+ 1001 01d3 70060000 		.4byte	.LASF63
+ 1002 01d7 50       		.byte	0x50
+ 1003 01d8 07       		.uleb128 0x7
+ 1004 01d9 E3030000 		.4byte	.LASF64
+ 1005 01dd 51       		.byte	0x51
+ 1006 01de 07       		.uleb128 0x7
+ 1007 01df 89090000 		.4byte	.LASF65
+ 1008 01e3 52       		.byte	0x52
+ 1009 01e4 07       		.uleb128 0x7
+ 1010 01e5 DE0A0000 		.4byte	.LASF66
+ 1011 01e9 53       		.byte	0x53
+ 1012 01ea 07       		.uleb128 0x7
+ 1013 01eb 2D0A0000 		.4byte	.LASF67
+ 1014 01ef 54       		.byte	0x54
+ 1015 01f0 07       		.uleb128 0x7
+ 1016 01f1 B8050000 		.4byte	.LASF68
+ 1017 01f5 55       		.byte	0x55
+ 1018 01f6 07       		.uleb128 0x7
+ 1019 01f7 F2040000 		.4byte	.LASF69
+ 1020 01fb 56       		.byte	0x56
+ 1021 01fc 07       		.uleb128 0x7
+ 1022 01fd 7C000000 		.4byte	.LASF70
+ 1023 0201 57       		.byte	0x57
+ 1024 0202 07       		.uleb128 0x7
+ 1025 0203 DC050000 		.4byte	.LASF71
+ 1026 0207 58       		.byte	0x58
+ 1027 0208 07       		.uleb128 0x7
+ 1028 0209 0C020000 		.4byte	.LASF72
+ 1029 020d 70       		.byte	0x70
+ 1030 020e 07       		.uleb128 0x7
+ 1031 020f A20E0000 		.4byte	.LASF73
+ 1032 0213 71       		.byte	0x71
+ 1033 0214 07       		.uleb128 0x7
+ 1034 0215 C4070000 		.4byte	.LASF74
+ 1035 0219 72       		.byte	0x72
+ 1036 021a 07       		.uleb128 0x7
+ 1037 021b 5B080000 		.4byte	.LASF75
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 26
+
+
+ 1038 021f 73       		.byte	0x73
+ 1039 0220 07       		.uleb128 0x7
+ 1040 0221 DC090000 		.4byte	.LASF76
+ 1041 0225 74       		.byte	0x74
+ 1042 0226 07       		.uleb128 0x7
+ 1043 0227 780E0000 		.4byte	.LASF77
+ 1044 022b 75       		.byte	0x75
+ 1045 022c 07       		.uleb128 0x7
+ 1046 022d DC000000 		.4byte	.LASF78
+ 1047 0231 76       		.byte	0x76
+ 1048 0232 07       		.uleb128 0x7
+ 1049 0233 32000000 		.4byte	.LASF79
+ 1050 0237 77       		.byte	0x77
+ 1051 0238 07       		.uleb128 0x7
+ 1052 0239 850C0000 		.4byte	.LASF80
+ 1053 023d 78       		.byte	0x78
+ 1054 023e 07       		.uleb128 0x7
+ 1055 023f C00C0000 		.4byte	.LASF81
+ 1056 0243 79       		.byte	0x79
+ 1057 0244 07       		.uleb128 0x7
+ 1058 0245 60040000 		.4byte	.LASF82
+ 1059 0249 7A       		.byte	0x7a
+ 1060 024a 07       		.uleb128 0x7
+ 1061 024b E4010000 		.4byte	.LASF83
+ 1062 024f FA       		.byte	0xfa
+ 1063 0250 07       		.uleb128 0x7
+ 1064 0251 21050000 		.4byte	.LASF84
+ 1065 0255 FB       		.byte	0xfb
+ 1066 0256 07       		.uleb128 0x7
+ 1067 0257 0A0B0000 		.4byte	.LASF85
+ 1068 025b FC       		.byte	0xfc
+ 1069 025c 07       		.uleb128 0x7
+ 1070 025d 5C0F0000 		.4byte	.LASF86
+ 1071 0261 FD       		.byte	0xfd
+ 1072 0262 07       		.uleb128 0x7
+ 1073 0263 3E040000 		.4byte	.LASF87
+ 1074 0267 FF       		.byte	0xff
+ 1075 0268 00       		.byte	0
+ 1076 0269 08       		.uleb128 0x8
+ 1077 026a 6B000000 		.4byte	0x6b
+ 1078 026e 79020000 		.4byte	0x279
+ 1079 0272 09       		.uleb128 0x9
+ 1080 0273 A4000000 		.4byte	0xa4
+ 1081 0277 05       		.byte	0x5
+ 1082 0278 00       		.byte	0
+ 1083 0279 0A       		.uleb128 0xa
+ 1084 027a 04       		.byte	0x4
+ 1085 027b 6B000000 		.4byte	0x6b
+ 1086 027f 0B       		.uleb128 0xb
+ 1087 0280 01       		.byte	0x1
+ 1088 0281 2C000000 		.4byte	0x2c
+ 1089 0285 04       		.byte	0x4
+ 1090 0286 E0       		.byte	0xe0
+ 1091 0287 AA020000 		.4byte	0x2aa
+ 1092 028b 07       		.uleb128 0x7
+ 1093 028c A80D0000 		.4byte	.LASF88
+ 1094 0290 00       		.byte	0
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 27
+
+
+ 1095 0291 07       		.uleb128 0x7
+ 1096 0292 08010000 		.4byte	.LASF89
+ 1097 0296 01       		.byte	0x1
+ 1098 0297 07       		.uleb128 0x7
+ 1099 0298 A5040000 		.4byte	.LASF90
+ 1100 029c 02       		.byte	0x2
+ 1101 029d 07       		.uleb128 0x7
+ 1102 029e DC0D0000 		.4byte	.LASF91
+ 1103 02a2 03       		.byte	0x3
+ 1104 02a3 07       		.uleb128 0x7
+ 1105 02a4 550B0000 		.4byte	.LASF92
+ 1106 02a8 04       		.byte	0x4
+ 1107 02a9 00       		.byte	0
+ 1108 02aa 0C       		.uleb128 0xc
+ 1109 02ab A40B0000 		.4byte	.LASF93
+ 1110 02af 04       		.byte	0x4
+ 1111 02b0 F0       		.byte	0xf0
+ 1112 02b1 7F020000 		.4byte	0x27f
+ 1113 02b5 0D       		.uleb128 0xd
+ 1114 02b6 10       		.byte	0x10
+ 1115 02b7 04       		.byte	0x4
+ 1116 02b8 2102     		.2byte	0x221
+ 1117 02ba 27030000 		.4byte	0x327
+ 1118 02be 0E       		.uleb128 0xe
+ 1119 02bf 4A0B0000 		.4byte	.LASF94
+ 1120 02c3 04       		.byte	0x4
+ 1121 02c4 2702     		.2byte	0x227
+ 1122 02c6 77000000 		.4byte	0x77
+ 1123 02ca 00       		.byte	0
+ 1124 02cb 0E       		.uleb128 0xe
+ 1125 02cc FF0A0000 		.4byte	.LASF95
+ 1126 02d0 04       		.byte	0x4
+ 1127 02d1 2D02     		.2byte	0x22d
+ 1128 02d3 77000000 		.4byte	0x77
+ 1129 02d7 02       		.byte	0x2
+ 1130 02d8 0E       		.uleb128 0xe
+ 1131 02d9 DC010000 		.4byte	.LASF96
+ 1132 02dd 04       		.byte	0x4
+ 1133 02de 3602     		.2byte	0x236
+ 1134 02e0 AA020000 		.4byte	0x2aa
+ 1135 02e4 04       		.byte	0x4
+ 1136 02e5 0E       		.uleb128 0xe
+ 1137 02e6 DA080000 		.4byte	.LASF97
+ 1138 02ea 04       		.byte	0x4
+ 1139 02eb 3E02     		.2byte	0x23e
+ 1140 02ed 6B000000 		.4byte	0x6b
+ 1141 02f1 05       		.byte	0x5
+ 1142 02f2 0E       		.uleb128 0xe
+ 1143 02f3 590A0000 		.4byte	.LASF98
+ 1144 02f7 04       		.byte	0x4
+ 1145 02f8 4502     		.2byte	0x245
+ 1146 02fa 6B000000 		.4byte	0x6b
+ 1147 02fe 06       		.byte	0x6
+ 1148 02ff 0E       		.uleb128 0xe
+ 1149 0300 0C030000 		.4byte	.LASF99
+ 1150 0304 04       		.byte	0x4
+ 1151 0305 4B02     		.2byte	0x24b
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 28
+
+
+ 1152 0307 69020000 		.4byte	0x269
+ 1153 030b 07       		.byte	0x7
+ 1154 030c 0E       		.uleb128 0xe
+ 1155 030d CE000000 		.4byte	.LASF100
+ 1156 0311 04       		.byte	0x4
+ 1157 0312 5302     		.2byte	0x253
+ 1158 0314 6B000000 		.4byte	0x6b
+ 1159 0318 0D       		.byte	0xd
+ 1160 0319 0E       		.uleb128 0xe
+ 1161 031a 70050000 		.4byte	.LASF101
+ 1162 031e 04       		.byte	0x4
+ 1163 031f 5F02     		.2byte	0x25f
+ 1164 0321 6B000000 		.4byte	0x6b
+ 1165 0325 0E       		.byte	0xe
+ 1166 0326 00       		.byte	0
+ 1167 0327 04       		.uleb128 0x4
+ 1168 0328 A80C0000 		.4byte	.LASF102
+ 1169 032c 04       		.byte	0x4
+ 1170 032d 6102     		.2byte	0x261
+ 1171 032f B5020000 		.4byte	0x2b5
+ 1172 0333 0D       		.uleb128 0xd
+ 1173 0334 20       		.byte	0x20
+ 1174 0335 04       		.byte	0x4
+ 1175 0336 6402     		.2byte	0x264
+ 1176 0338 57030000 		.4byte	0x357
+ 1177 033c 0E       		.uleb128 0xe
+ 1178 033d 800B0000 		.4byte	.LASF103
+ 1179 0341 04       		.byte	0x4
+ 1180 0342 6702     		.2byte	0x267
+ 1181 0344 57030000 		.4byte	0x357
+ 1182 0348 00       		.byte	0
+ 1183 0349 0E       		.uleb128 0xe
+ 1184 034a 4E0A0000 		.4byte	.LASF104
+ 1185 034e 04       		.byte	0x4
+ 1186 034f 6A02     		.2byte	0x26a
+ 1187 0351 6B000000 		.4byte	0x6b
+ 1188 0355 1F       		.byte	0x1f
+ 1189 0356 00       		.byte	0
+ 1190 0357 08       		.uleb128 0x8
+ 1191 0358 6B000000 		.4byte	0x6b
+ 1192 035c 67030000 		.4byte	0x367
+ 1193 0360 09       		.uleb128 0x9
+ 1194 0361 A4000000 		.4byte	0xa4
+ 1195 0365 1E       		.byte	0x1e
+ 1196 0366 00       		.byte	0
+ 1197 0367 04       		.uleb128 0x4
+ 1198 0368 65000000 		.4byte	.LASF105
+ 1199 036c 04       		.byte	0x4
+ 1200 036d 6C02     		.2byte	0x26c
+ 1201 036f 33030000 		.4byte	0x333
+ 1202 0373 0D       		.uleb128 0xd
+ 1203 0374 20       		.byte	0x20
+ 1204 0375 04       		.byte	0x4
+ 1205 0376 6F02     		.2byte	0x26f
+ 1206 0378 97030000 		.4byte	0x397
+ 1207 037c 0E       		.uleb128 0xe
+ 1208 037d C9030000 		.4byte	.LASF106
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 29
+
+
+ 1209 0381 04       		.byte	0x4
+ 1210 0382 7302     		.2byte	0x273
+ 1211 0384 57030000 		.4byte	0x357
+ 1212 0388 00       		.byte	0
+ 1213 0389 0E       		.uleb128 0xe
+ 1214 038a D9060000 		.4byte	.LASF107
+ 1215 038e 04       		.byte	0x4
+ 1216 038f 7602     		.2byte	0x276
+ 1217 0391 6B000000 		.4byte	0x6b
+ 1218 0395 1F       		.byte	0x1f
+ 1219 0396 00       		.byte	0
+ 1220 0397 04       		.uleb128 0x4
+ 1221 0398 FF050000 		.4byte	.LASF108
+ 1222 039c 04       		.byte	0x4
+ 1223 039d 7802     		.2byte	0x278
+ 1224 039f 73030000 		.4byte	0x373
+ 1225 03a3 0D       		.uleb128 0xd
+ 1226 03a4 14       		.byte	0x14
+ 1227 03a5 04       		.byte	0x4
+ 1228 03a6 7B02     		.2byte	0x27b
+ 1229 03a8 EE030000 		.4byte	0x3ee
+ 1230 03ac 0E       		.uleb128 0xe
+ 1231 03ad 79030000 		.4byte	.LASF109
+ 1232 03b1 04       		.byte	0x4
+ 1233 03b2 8302     		.2byte	0x283
+ 1234 03b4 6B000000 		.4byte	0x6b
+ 1235 03b8 00       		.byte	0
+ 1236 03b9 0E       		.uleb128 0xe
+ 1237 03ba 920D0000 		.4byte	.LASF110
+ 1238 03be 04       		.byte	0x4
+ 1239 03bf 8602     		.2byte	0x286
+ 1240 03c1 EE030000 		.4byte	0x3ee
+ 1241 03c5 04       		.byte	0x4
+ 1242 03c6 0E       		.uleb128 0xe
+ 1243 03c7 800B0000 		.4byte	.LASF103
+ 1244 03cb 04       		.byte	0x4
+ 1245 03cc 8802     		.2byte	0x288
+ 1246 03ce F4030000 		.4byte	0x3f4
+ 1247 03d2 08       		.byte	0x8
+ 1248 03d3 0E       		.uleb128 0xe
+ 1249 03d4 C9030000 		.4byte	.LASF106
+ 1250 03d8 04       		.byte	0x4
+ 1251 03d9 8A02     		.2byte	0x28a
+ 1252 03db FA030000 		.4byte	0x3fa
+ 1253 03df 0C       		.byte	0xc
+ 1254 03e0 0E       		.uleb128 0xe
+ 1255 03e1 40050000 		.4byte	.LASF111
+ 1256 03e5 04       		.byte	0x4
+ 1257 03e6 9402     		.2byte	0x294
+ 1258 03e8 77000000 		.4byte	0x77
+ 1259 03ec 10       		.byte	0x10
+ 1260 03ed 00       		.byte	0
+ 1261 03ee 0A       		.uleb128 0xa
+ 1262 03ef 04       		.byte	0x4
+ 1263 03f0 27030000 		.4byte	0x327
+ 1264 03f4 0A       		.uleb128 0xa
+ 1265 03f5 04       		.byte	0x4
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 30
+
+
+ 1266 03f6 67030000 		.4byte	0x367
+ 1267 03fa 0A       		.uleb128 0xa
+ 1268 03fb 04       		.byte	0x4
+ 1269 03fc 97030000 		.4byte	0x397
+ 1270 0400 04       		.uleb128 0x4
+ 1271 0401 760D0000 		.4byte	.LASF112
+ 1272 0405 04       		.byte	0x4
+ 1273 0406 9602     		.2byte	0x296
+ 1274 0408 A3030000 		.4byte	0x3a3
+ 1275 040c 04       		.uleb128 0x4
+ 1276 040d F10E0000 		.4byte	.LASF113
+ 1277 0411 05       		.byte	0x5
+ 1278 0412 8901     		.2byte	0x189
+ 1279 0414 77000000 		.4byte	0x77
+ 1280 0418 0D       		.uleb128 0xd
+ 1281 0419 02       		.byte	0x2
+ 1282 041a 05       		.byte	0x5
+ 1283 041b 9301     		.2byte	0x193
+ 1284 041d 3C040000 		.4byte	0x43c
+ 1285 0421 0E       		.uleb128 0xe
+ 1286 0422 4C040000 		.4byte	.LASF114
+ 1287 0426 05       		.byte	0x5
+ 1288 0427 9A01     		.2byte	0x19a
+ 1289 0429 6B000000 		.4byte	0x6b
+ 1290 042d 00       		.byte	0
+ 1291 042e 0E       		.uleb128 0xe
+ 1292 042f BE070000 		.4byte	.LASF115
+ 1293 0433 05       		.byte	0x5
+ 1294 0434 A001     		.2byte	0x1a0
+ 1295 0436 6B000000 		.4byte	0x6b
+ 1296 043a 01       		.byte	0x1
+ 1297 043b 00       		.byte	0
+ 1298 043c 04       		.uleb128 0x4
+ 1299 043d 51000000 		.4byte	.LASF116
+ 1300 0441 05       		.byte	0x5
+ 1301 0442 A201     		.2byte	0x1a2
+ 1302 0444 18040000 		.4byte	0x418
+ 1303 0448 0D       		.uleb128 0xd
+ 1304 0449 08       		.byte	0x8
+ 1305 044a 05       		.byte	0x5
+ 1306 044b BE01     		.2byte	0x1be
+ 1307 044d 79040000 		.4byte	0x479
+ 1308 0451 0F       		.uleb128 0xf
+ 1309 0452 76616C00 		.ascii	"val\000"
+ 1310 0456 05       		.byte	0x5
+ 1311 0457 C101     		.2byte	0x1c1
+ 1312 0459 79020000 		.4byte	0x279
+ 1313 045d 00       		.byte	0
+ 1314 045e 0F       		.uleb128 0xf
+ 1315 045f 6C656E00 		.ascii	"len\000"
+ 1316 0463 05       		.byte	0x5
+ 1317 0464 C401     		.2byte	0x1c4
+ 1318 0466 77000000 		.4byte	0x77
+ 1319 046a 04       		.byte	0x4
+ 1320 046b 0E       		.uleb128 0xe
+ 1321 046c 17030000 		.4byte	.LASF117
+ 1322 0470 05       		.byte	0x5
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 31
+
+
+ 1323 0471 CB01     		.2byte	0x1cb
+ 1324 0473 77000000 		.4byte	0x77
+ 1325 0477 06       		.byte	0x6
+ 1326 0478 00       		.byte	0
+ 1327 0479 04       		.uleb128 0x4
+ 1328 047a AA010000 		.4byte	.LASF118
+ 1329 047e 05       		.byte	0x5
+ 1330 047f CD01     		.2byte	0x1cd
+ 1331 0481 48040000 		.4byte	0x448
+ 1332 0485 0D       		.uleb128 0xd
+ 1333 0486 0C       		.byte	0xc
+ 1334 0487 05       		.byte	0x5
+ 1335 0488 D001     		.2byte	0x1d0
+ 1336 048a A9040000 		.4byte	0x4a9
+ 1337 048e 0E       		.uleb128 0xe
+ 1338 048f EC040000 		.4byte	.LASF119
+ 1339 0493 05       		.byte	0x5
+ 1340 0494 D301     		.2byte	0x1d3
+ 1341 0496 79040000 		.4byte	0x479
+ 1342 049a 00       		.byte	0
+ 1343 049b 0E       		.uleb128 0xe
+ 1344 049c 55040000 		.4byte	.LASF120
+ 1345 04a0 05       		.byte	0x5
+ 1346 04a1 D601     		.2byte	0x1d6
+ 1347 04a3 0C040000 		.4byte	0x40c
+ 1348 04a7 08       		.byte	0x8
+ 1349 04a8 00       		.byte	0
+ 1350 04a9 04       		.uleb128 0x4
+ 1351 04aa BD090000 		.4byte	.LASF121
+ 1352 04ae 05       		.byte	0x5
+ 1353 04af D801     		.2byte	0x1d8
+ 1354 04b1 85040000 		.4byte	0x485
+ 1355 04b5 0C       		.uleb128 0xc
+ 1356 04b6 A2080000 		.4byte	.LASF122
+ 1357 04ba 06       		.byte	0x6
+ 1358 04bb 34       		.byte	0x34
+ 1359 04bc A9040000 		.4byte	0x4a9
+ 1360 04c0 06       		.uleb128 0x6
+ 1361 04c1 01       		.byte	0x1
+ 1362 04c2 2C000000 		.4byte	0x2c
+ 1363 04c6 07       		.byte	0x7
+ 1364 04c7 A808     		.2byte	0x8a8
+ 1365 04c9 F8040000 		.4byte	0x4f8
+ 1366 04cd 07       		.uleb128 0x7
+ 1367 04ce 1E000000 		.4byte	.LASF123
+ 1368 04d2 00       		.byte	0
+ 1369 04d3 07       		.uleb128 0x7
+ 1370 04d4 C1080000 		.4byte	.LASF124
+ 1371 04d8 01       		.byte	0x1
+ 1372 04d9 07       		.uleb128 0x7
+ 1373 04da 060E0000 		.4byte	.LASF125
+ 1374 04de 02       		.byte	0x2
+ 1375 04df 07       		.uleb128 0x7
+ 1376 04e0 83020000 		.4byte	.LASF126
+ 1377 04e4 03       		.byte	0x3
+ 1378 04e5 07       		.uleb128 0x7
+ 1379 04e6 20040000 		.4byte	.LASF127
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 32
+
+
+ 1380 04ea 04       		.byte	0x4
+ 1381 04eb 07       		.uleb128 0x7
+ 1382 04ec AC0A0000 		.4byte	.LASF128
+ 1383 04f0 05       		.byte	0x5
+ 1384 04f1 07       		.uleb128 0x7
+ 1385 04f2 82030000 		.4byte	.LASF129
+ 1386 04f6 06       		.byte	0x6
+ 1387 04f7 00       		.byte	0
+ 1388 04f8 04       		.uleb128 0x4
+ 1389 04f9 CE0D0000 		.4byte	.LASF130
+ 1390 04fd 07       		.byte	0x7
+ 1391 04fe B608     		.2byte	0x8b6
+ 1392 0500 C0040000 		.4byte	0x4c0
+ 1393 0504 06       		.uleb128 0x6
+ 1394 0505 01       		.byte	0x1
+ 1395 0506 2C000000 		.4byte	0x2c
+ 1396 050a 07       		.byte	0x7
+ 1397 050b EB08     		.2byte	0x8eb
+ 1398 050d 30050000 		.4byte	0x530
+ 1399 0511 07       		.uleb128 0x7
+ 1400 0512 070C0000 		.4byte	.LASF131
+ 1401 0516 00       		.byte	0
+ 1402 0517 07       		.uleb128 0x7
+ 1403 0518 6E0C0000 		.4byte	.LASF132
+ 1404 051c 01       		.byte	0x1
+ 1405 051d 07       		.uleb128 0x7
+ 1406 051e AA090000 		.4byte	.LASF133
+ 1407 0522 02       		.byte	0x2
+ 1408 0523 07       		.uleb128 0x7
+ 1409 0524 09040000 		.4byte	.LASF134
+ 1410 0528 02       		.byte	0x2
+ 1411 0529 07       		.uleb128 0x7
+ 1412 052a F60B0000 		.4byte	.LASF135
+ 1413 052e 03       		.byte	0x3
+ 1414 052f 00       		.byte	0
+ 1415 0530 10       		.uleb128 0x10
+ 1416 0531 270A0000 		.4byte	.LASF138
+ 1417 0535 01       		.byte	0x1
+ 1418 0536 2C000000 		.4byte	0x2c
+ 1419 053a 08       		.byte	0x8
+ 1420 053b 33       		.byte	0x33
+ 1421 053c 4D050000 		.4byte	0x54d
+ 1422 0540 07       		.uleb128 0x7
+ 1423 0541 6B060000 		.4byte	.LASF136
+ 1424 0545 00       		.byte	0
+ 1425 0546 07       		.uleb128 0x7
+ 1426 0547 160C0000 		.4byte	.LASF137
+ 1427 054b 01       		.byte	0x1
+ 1428 054c 00       		.byte	0
+ 1429 054d 0C       		.uleb128 0xc
+ 1430 054e 270A0000 		.4byte	.LASF138
+ 1431 0552 08       		.byte	0x8
+ 1432 0553 36       		.byte	0x36
+ 1433 0554 30050000 		.4byte	0x530
+ 1434 0558 11       		.uleb128 0x11
+ 1435 0559 6B010000 		.4byte	.LASF141
+ 1436 055d 01       		.byte	0x1
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 33
+
+
+ 1437 055e 4B       		.byte	0x4b
+ 1438 055f 00000000 		.4byte	.LFB36
+ 1439 0563 64000000 		.4byte	.LFE36-.LFB36
+ 1440 0567 01       		.uleb128 0x1
+ 1441 0568 9C       		.byte	0x9c
+ 1442 0569 7C050000 		.4byte	0x57c
+ 1443 056d 12       		.uleb128 0x12
+ 1444 056e 4F020000 		.4byte	.LASF140
+ 1445 0572 01       		.byte	0x1
+ 1446 0573 50       		.byte	0x50
+ 1447 0574 B5040000 		.4byte	0x4b5
+ 1448 0578 02       		.uleb128 0x2
+ 1449 0579 91       		.byte	0x91
+ 1450 057a 6C       		.sleb128 -20
+ 1451 057b 00       		.byte	0
+ 1452 057c 13       		.uleb128 0x13
+ 1453 057d 62060000 		.4byte	.LASF149
+ 1454 0581 01       		.byte	0x1
+ 1455 0582 5D       		.byte	0x5d
+ 1456 0583 00000000 		.4byte	.LFB37
+ 1457 0587 64000000 		.4byte	.LFE37-.LFB37
+ 1458 058b 01       		.uleb128 0x1
+ 1459 058c 9C       		.byte	0x9c
+ 1460 058d B8050000 		.4byte	0x5b8
+ 1461 0591 14       		.uleb128 0x14
+ 1462 0592 6D00     		.ascii	"m\000"
+ 1463 0594 01       		.byte	0x1
+ 1464 0595 5D       		.byte	0x5d
+ 1465 0596 4D050000 		.4byte	0x54d
+ 1466 059a 02       		.uleb128 0x2
+ 1467 059b 91       		.byte	0x91
+ 1468 059c 6F       		.sleb128 -17
+ 1469 059d 15       		.uleb128 0x15
+ 1470 059e 1C0E0000 		.4byte	.LASF139
+ 1471 05a2 01       		.byte	0x1
+ 1472 05a3 5D       		.byte	0x5d
+ 1473 05a4 5D000000 		.4byte	0x5d
+ 1474 05a8 02       		.uleb128 0x2
+ 1475 05a9 91       		.byte	0x91
+ 1476 05aa 68       		.sleb128 -24
+ 1477 05ab 16       		.uleb128 0x16
+ 1478 05ac 7300     		.ascii	"s\000"
+ 1479 05ae 01       		.byte	0x1
+ 1480 05af 5F       		.byte	0x5f
+ 1481 05b0 5D000000 		.4byte	0x5d
+ 1482 05b4 02       		.uleb128 0x2
+ 1483 05b5 91       		.byte	0x91
+ 1484 05b6 74       		.sleb128 -12
+ 1485 05b7 00       		.byte	0
+ 1486 05b8 11       		.uleb128 0x11
+ 1487 05b9 02020000 		.4byte	.LASF142
+ 1488 05bd 01       		.byte	0x1
+ 1489 05be 76       		.byte	0x76
+ 1490 05bf 00000000 		.4byte	.LFB38
+ 1491 05c3 4C000000 		.4byte	.LFE38-.LFB38
+ 1492 05c7 01       		.uleb128 0x1
+ 1493 05c8 9C       		.byte	0x9c
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 34
+
+
+ 1494 05c9 DC050000 		.4byte	0x5dc
+ 1495 05cd 12       		.uleb128 0x12
+ 1496 05ce 4F020000 		.4byte	.LASF140
+ 1497 05d2 01       		.byte	0x1
+ 1498 05d3 7B       		.byte	0x7b
+ 1499 05d4 B5040000 		.4byte	0x4b5
+ 1500 05d8 02       		.uleb128 0x2
+ 1501 05d9 91       		.byte	0x91
+ 1502 05da 6C       		.sleb128 -20
+ 1503 05db 00       		.byte	0
+ 1504 05dc 17       		.uleb128 0x17
+ 1505 05dd E6040000 		.4byte	.LASF143
+ 1506 05e1 01       		.byte	0x1
+ 1507 05e2 8F       		.byte	0x8f
+ 1508 05e3 00000000 		.4byte	.LFB39
+ 1509 05e7 54000000 		.4byte	.LFE39-.LFB39
+ 1510 05eb 01       		.uleb128 0x1
+ 1511 05ec 9C       		.byte	0x9c
+ 1512 05ed 17       		.uleb128 0x17
+ 1513 05ee 79080000 		.4byte	.LASF144
+ 1514 05f2 01       		.byte	0x1
+ 1515 05f3 A5       		.byte	0xa5
+ 1516 05f4 00000000 		.4byte	.LFB40
+ 1517 05f8 18000000 		.4byte	.LFE40-.LFB40
+ 1518 05fc 01       		.uleb128 0x1
+ 1519 05fd 9C       		.byte	0x9c
+ 1520 05fe 11       		.uleb128 0x11
+ 1521 05ff 880B0000 		.4byte	.LASF145
+ 1522 0603 01       		.byte	0x1
+ 1523 0604 B1       		.byte	0xb1
+ 1524 0605 00000000 		.4byte	.LFB42
+ 1525 0609 4C000000 		.4byte	.LFE42-.LFB42
+ 1526 060d 01       		.uleb128 0x1
+ 1527 060e 9C       		.byte	0x9c
+ 1528 060f 25060000 		.4byte	0x625
+ 1529 0613 12       		.uleb128 0x12
+ 1530 0614 6D0E0000 		.4byte	.LASF146
+ 1531 0618 01       		.byte	0x1
+ 1532 0619 B3       		.byte	0xb3
+ 1533 061a 5D000000 		.4byte	0x5d
+ 1534 061e 05       		.uleb128 0x5
+ 1535 061f 03       		.byte	0x3
+ 1536 0620 00000000 		.4byte	motorState.9399
+ 1537 0624 00       		.byte	0
+ 1538 0625 18       		.uleb128 0x18
+ 1539 0626 C80E0000 		.4byte	.LASF147
+ 1540 062a 01       		.byte	0x1
+ 1541 062b D3       		.byte	0xd3
+ 1542 062c 5D000000 		.4byte	0x5d
+ 1543 0630 00000000 		.4byte	.LFB43
+ 1544 0634 1A000000 		.4byte	.LFE43-.LFB43
+ 1545 0638 01       		.uleb128 0x1
+ 1546 0639 9C       		.byte	0x9c
+ 1547 063a 19       		.uleb128 0x19
+ 1548 063b C30A0000 		.4byte	.LASF148
+ 1549 063f 01       		.byte	0x1
+ 1550 0640 0401     		.2byte	0x104
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 35
+
+
+ 1551 0642 00000000 		.4byte	.LFB44
+ 1552 0646 0C010000 		.4byte	.LFE44-.LFB44
+ 1553 064a 01       		.uleb128 0x1
+ 1554 064b 9C       		.byte	0x9c
+ 1555 064c 1A       		.uleb128 0x1a
+ 1556 064d 9B0D0000 		.4byte	.LASF150
+ 1557 0651 01       		.byte	0x1
+ 1558 0652 5401     		.2byte	0x154
+ 1559 0654 00000000 		.4byte	.LFB45
+ 1560 0658 70000000 		.4byte	.LFE45-.LFB45
+ 1561 065c 01       		.uleb128 0x1
+ 1562 065d 9C       		.byte	0x9c
+ 1563 065e AB060000 		.4byte	0x6ab
+ 1564 0662 1B       		.uleb128 0x1b
+ 1565 0663 4B0D0000 		.4byte	.LASF151
+ 1566 0667 01       		.byte	0x1
+ 1567 0668 5401     		.2byte	0x154
+ 1568 066a 79020000 		.4byte	0x279
+ 1569 066e 02       		.uleb128 0x2
+ 1570 066f 91       		.byte	0x91
+ 1571 0670 6C       		.sleb128 -20
+ 1572 0671 1C       		.uleb128 0x1c
+ 1573 0672 6C656E00 		.ascii	"len\000"
+ 1574 0676 01       		.byte	0x1
+ 1575 0677 5401     		.2byte	0x154
+ 1576 0679 6B000000 		.4byte	0x6b
+ 1577 067d 02       		.uleb128 0x2
+ 1578 067e 91       		.byte	0x91
+ 1579 067f 6B       		.sleb128 -21
+ 1580 0680 1D       		.uleb128 0x1d
+ 1581 0681 35040000 		.4byte	.LASF152
+ 1582 0685 01       		.byte	0x1
+ 1583 0686 5601     		.2byte	0x156
+ 1584 0688 6B000000 		.4byte	0x6b
+ 1585 068c 02       		.uleb128 0x2
+ 1586 068d 91       		.byte	0x91
+ 1587 068e 77       		.sleb128 -9
+ 1588 068f 1D       		.uleb128 0x1d
+ 1589 0690 FD000000 		.4byte	.LASF153
+ 1590 0694 01       		.byte	0x1
+ 1591 0695 5601     		.2byte	0x156
+ 1592 0697 6B000000 		.4byte	0x6b
+ 1593 069b 02       		.uleb128 0x2
+ 1594 069c 91       		.byte	0x91
+ 1595 069d 76       		.sleb128 -10
+ 1596 069e 1E       		.uleb128 0x1e
+ 1597 069f BD010000 		.4byte	.LASF172
+ 1598 06a3 01       		.byte	0x1
+ 1599 06a4 5601     		.2byte	0x156
+ 1600 06a6 6B000000 		.4byte	0x6b
+ 1601 06aa 00       		.byte	0
+ 1602 06ab 1F       		.uleb128 0x1f
+ 1603 06ac 81080000 		.4byte	.LASF154
+ 1604 06b0 09       		.byte	0x9
+ 1605 06b1 B702     		.2byte	0x2b7
+ 1606 06b3 00040000 		.4byte	0x400
+ 1607 06b7 1F       		.uleb128 0x1f
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 36
+
+
+ 1608 06b8 09070000 		.4byte	.LASF155
+ 1609 06bc 07       		.byte	0x7
+ 1610 06bd 160B     		.2byte	0xb16
+ 1611 06bf F8040000 		.4byte	0x4f8
+ 1612 06c3 1F       		.uleb128 0x1f
+ 1613 06c4 00090000 		.4byte	.LASF156
+ 1614 06c8 07       		.byte	0x7
+ 1615 06c9 170B     		.2byte	0xb17
+ 1616 06cb 3C040000 		.4byte	0x43c
+ 1617 06cf 20       		.uleb128 0x20
+ 1618 06d0 0D080000 		.4byte	.LASF157
+ 1619 06d4 08       		.byte	0x8
+ 1620 06d5 22       		.byte	0x22
+ 1621 06d6 98000000 		.4byte	0x98
+ 1622 06da 05       		.uleb128 0x5
+ 1623 06db 03       		.byte	0x3
+ 1624 06dc 00000000 		.4byte	current_watchdog_counter
+ 1625 06e0 20       		.uleb128 0x20
+ 1626 06e1 89010000 		.4byte	.LASF158
+ 1627 06e5 08       		.byte	0x8
+ 1628 06e6 23       		.byte	0x23
+ 1629 06e7 F1060000 		.4byte	0x6f1
+ 1630 06eb 05       		.uleb128 0x5
+ 1631 06ec 03       		.byte	0x3
+ 1632 06ed 00000000 		.4byte	speedLeft
+ 1633 06f1 05       		.uleb128 0x5
+ 1634 06f2 5D000000 		.4byte	0x5d
+ 1635 06f6 20       		.uleb128 0x20
+ 1636 06f7 680A0000 		.4byte	.LASF159
+ 1637 06fb 08       		.byte	0x8
+ 1638 06fc 24       		.byte	0x24
+ 1639 06fd F1060000 		.4byte	0x6f1
+ 1640 0701 05       		.uleb128 0x5
+ 1641 0702 03       		.byte	0x3
+ 1642 0703 00000000 		.4byte	speedRight
+ 1643 0707 21       		.uleb128 0x21
+ 1644 0708 50010000 		.4byte	.LASF160
+ 1645 070c 01       		.byte	0x1
+ 1646 070d 34       		.byte	0x34
+ 1647 070e 6B000000 		.4byte	0x6b
+ 1648 0712 21       		.uleb128 0x21
+ 1649 0713 5F010000 		.4byte	.LASF161
+ 1650 0717 01       		.byte	0x1
+ 1651 0718 37       		.byte	0x37
+ 1652 0719 67030000 		.4byte	0x367
+ 1653 071d 20       		.uleb128 0x20
+ 1654 071e 940B0000 		.4byte	.LASF162
+ 1655 0722 01       		.byte	0x1
+ 1656 0723 41       		.byte	0x41
+ 1657 0724 5D000000 		.4byte	0x5d
+ 1658 0728 05       		.uleb128 0x5
+ 1659 0729 03       		.byte	0x3
+ 1660 072a 00000000 		.4byte	processTachFlag
+ 1661 072e 20       		.uleb128 0x20
+ 1662 072f 1C0B0000 		.4byte	.LASF163
+ 1663 0733 01       		.byte	0x1
+ 1664 0734 42       		.byte	0x42
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 37
+
+
+ 1665 0735 5D000000 		.4byte	0x5d
+ 1666 0739 05       		.uleb128 0x5
+ 1667 073a 03       		.byte	0x3
+ 1668 073b 00000000 		.4byte	tachLeftNotify
+ 1669 073f 20       		.uleb128 0x20
+ 1670 0740 DD020000 		.4byte	.LASF164
+ 1671 0744 01       		.byte	0x1
+ 1672 0745 43       		.byte	0x43
+ 1673 0746 5D000000 		.4byte	0x5d
+ 1674 074a 05       		.uleb128 0x5
+ 1675 074b 03       		.byte	0x3
+ 1676 074c 00000000 		.4byte	tachRightNotify
+ 1677 0750 20       		.uleb128 0x20
+ 1678 0751 04080000 		.4byte	.LASF165
+ 1679 0755 01       		.byte	0x1
+ 1680 0756 44       		.byte	0x44
+ 1681 0757 5D000000 		.4byte	0x5d
+ 1682 075b 05       		.uleb128 0x5
+ 1683 075c 03       		.byte	0x3
+ 1684 075d 00000000 		.4byte	tachLeft
+ 1685 0761 20       		.uleb128 0x20
+ 1686 0762 51030000 		.4byte	.LASF166
+ 1687 0766 01       		.byte	0x1
+ 1688 0767 45       		.byte	0x45
+ 1689 0768 5D000000 		.4byte	0x5d
+ 1690 076c 05       		.uleb128 0x5
+ 1691 076d 03       		.byte	0x3
+ 1692 076e 00000000 		.4byte	tachRight
+ 1693 0772 20       		.uleb128 0x20
+ 1694 0773 9B020000 		.4byte	.LASF167
+ 1695 0777 01       		.byte	0x1
+ 1696 0778 47       		.byte	0x47
+ 1697 0779 5D000000 		.4byte	0x5d
+ 1698 077d 05       		.uleb128 0x5
+ 1699 077e 03       		.byte	0x3
+ 1700 077f 00000000 		.4byte	motorFlag
+ 1701 0783 20       		.uleb128 0x20
+ 1702 0784 7E0C0000 		.4byte	.LASF168
+ 1703 0788 01       		.byte	0x1
+ 1704 0789 48       		.byte	0x48
+ 1705 078a 5D000000 		.4byte	0x5d
+ 1706 078e 05       		.uleb128 0x5
+ 1707 078f 03       		.byte	0x3
+ 1708 0790 00000000 		.4byte	direct
+ 1709 0794 00       		.byte	0
+ 1710              		.section	.debug_abbrev,"",%progbits
+ 1711              	.Ldebug_abbrev0:
+ 1712 0000 01       		.uleb128 0x1
+ 1713 0001 11       		.uleb128 0x11
+ 1714 0002 01       		.byte	0x1
+ 1715 0003 25       		.uleb128 0x25
+ 1716 0004 0E       		.uleb128 0xe
+ 1717 0005 13       		.uleb128 0x13
+ 1718 0006 0B       		.uleb128 0xb
+ 1719 0007 03       		.uleb128 0x3
+ 1720 0008 0E       		.uleb128 0xe
+ 1721 0009 1B       		.uleb128 0x1b
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 38
+
+
+ 1722 000a 0E       		.uleb128 0xe
+ 1723 000b 55       		.uleb128 0x55
+ 1724 000c 17       		.uleb128 0x17
+ 1725 000d 11       		.uleb128 0x11
+ 1726 000e 01       		.uleb128 0x1
+ 1727 000f 10       		.uleb128 0x10
+ 1728 0010 17       		.uleb128 0x17
+ 1729 0011 00       		.byte	0
+ 1730 0012 00       		.byte	0
+ 1731 0013 02       		.uleb128 0x2
+ 1732 0014 24       		.uleb128 0x24
+ 1733 0015 00       		.byte	0
+ 1734 0016 0B       		.uleb128 0xb
+ 1735 0017 0B       		.uleb128 0xb
+ 1736 0018 3E       		.uleb128 0x3e
+ 1737 0019 0B       		.uleb128 0xb
+ 1738 001a 03       		.uleb128 0x3
+ 1739 001b 0E       		.uleb128 0xe
+ 1740 001c 00       		.byte	0
+ 1741 001d 00       		.byte	0
+ 1742 001e 03       		.uleb128 0x3
+ 1743 001f 24       		.uleb128 0x24
+ 1744 0020 00       		.byte	0
+ 1745 0021 0B       		.uleb128 0xb
+ 1746 0022 0B       		.uleb128 0xb
+ 1747 0023 3E       		.uleb128 0x3e
+ 1748 0024 0B       		.uleb128 0xb
+ 1749 0025 03       		.uleb128 0x3
+ 1750 0026 08       		.uleb128 0x8
+ 1751 0027 00       		.byte	0
+ 1752 0028 00       		.byte	0
+ 1753 0029 04       		.uleb128 0x4
+ 1754 002a 16       		.uleb128 0x16
+ 1755 002b 00       		.byte	0
+ 1756 002c 03       		.uleb128 0x3
+ 1757 002d 0E       		.uleb128 0xe
+ 1758 002e 3A       		.uleb128 0x3a
+ 1759 002f 0B       		.uleb128 0xb
+ 1760 0030 3B       		.uleb128 0x3b
+ 1761 0031 05       		.uleb128 0x5
+ 1762 0032 49       		.uleb128 0x49
+ 1763 0033 13       		.uleb128 0x13
+ 1764 0034 00       		.byte	0
+ 1765 0035 00       		.byte	0
+ 1766 0036 05       		.uleb128 0x5
+ 1767 0037 35       		.uleb128 0x35
+ 1768 0038 00       		.byte	0
+ 1769 0039 49       		.uleb128 0x49
+ 1770 003a 13       		.uleb128 0x13
+ 1771 003b 00       		.byte	0
+ 1772 003c 00       		.byte	0
+ 1773 003d 06       		.uleb128 0x6
+ 1774 003e 04       		.uleb128 0x4
+ 1775 003f 01       		.byte	0x1
+ 1776 0040 0B       		.uleb128 0xb
+ 1777 0041 0B       		.uleb128 0xb
+ 1778 0042 49       		.uleb128 0x49
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 39
+
+
+ 1779 0043 13       		.uleb128 0x13
+ 1780 0044 3A       		.uleb128 0x3a
+ 1781 0045 0B       		.uleb128 0xb
+ 1782 0046 3B       		.uleb128 0x3b
+ 1783 0047 05       		.uleb128 0x5
+ 1784 0048 01       		.uleb128 0x1
+ 1785 0049 13       		.uleb128 0x13
+ 1786 004a 00       		.byte	0
+ 1787 004b 00       		.byte	0
+ 1788 004c 07       		.uleb128 0x7
+ 1789 004d 28       		.uleb128 0x28
+ 1790 004e 00       		.byte	0
+ 1791 004f 03       		.uleb128 0x3
+ 1792 0050 0E       		.uleb128 0xe
+ 1793 0051 1C       		.uleb128 0x1c
+ 1794 0052 0B       		.uleb128 0xb
+ 1795 0053 00       		.byte	0
+ 1796 0054 00       		.byte	0
+ 1797 0055 08       		.uleb128 0x8
+ 1798 0056 01       		.uleb128 0x1
+ 1799 0057 01       		.byte	0x1
+ 1800 0058 49       		.uleb128 0x49
+ 1801 0059 13       		.uleb128 0x13
+ 1802 005a 01       		.uleb128 0x1
+ 1803 005b 13       		.uleb128 0x13
+ 1804 005c 00       		.byte	0
+ 1805 005d 00       		.byte	0
+ 1806 005e 09       		.uleb128 0x9
+ 1807 005f 21       		.uleb128 0x21
+ 1808 0060 00       		.byte	0
+ 1809 0061 49       		.uleb128 0x49
+ 1810 0062 13       		.uleb128 0x13
+ 1811 0063 2F       		.uleb128 0x2f
+ 1812 0064 0B       		.uleb128 0xb
+ 1813 0065 00       		.byte	0
+ 1814 0066 00       		.byte	0
+ 1815 0067 0A       		.uleb128 0xa
+ 1816 0068 0F       		.uleb128 0xf
+ 1817 0069 00       		.byte	0
+ 1818 006a 0B       		.uleb128 0xb
+ 1819 006b 0B       		.uleb128 0xb
+ 1820 006c 49       		.uleb128 0x49
+ 1821 006d 13       		.uleb128 0x13
+ 1822 006e 00       		.byte	0
+ 1823 006f 00       		.byte	0
+ 1824 0070 0B       		.uleb128 0xb
+ 1825 0071 04       		.uleb128 0x4
+ 1826 0072 01       		.byte	0x1
+ 1827 0073 0B       		.uleb128 0xb
+ 1828 0074 0B       		.uleb128 0xb
+ 1829 0075 49       		.uleb128 0x49
+ 1830 0076 13       		.uleb128 0x13
+ 1831 0077 3A       		.uleb128 0x3a
+ 1832 0078 0B       		.uleb128 0xb
+ 1833 0079 3B       		.uleb128 0x3b
+ 1834 007a 0B       		.uleb128 0xb
+ 1835 007b 01       		.uleb128 0x1
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 40
+
+
+ 1836 007c 13       		.uleb128 0x13
+ 1837 007d 00       		.byte	0
+ 1838 007e 00       		.byte	0
+ 1839 007f 0C       		.uleb128 0xc
+ 1840 0080 16       		.uleb128 0x16
+ 1841 0081 00       		.byte	0
+ 1842 0082 03       		.uleb128 0x3
+ 1843 0083 0E       		.uleb128 0xe
+ 1844 0084 3A       		.uleb128 0x3a
+ 1845 0085 0B       		.uleb128 0xb
+ 1846 0086 3B       		.uleb128 0x3b
+ 1847 0087 0B       		.uleb128 0xb
+ 1848 0088 49       		.uleb128 0x49
+ 1849 0089 13       		.uleb128 0x13
+ 1850 008a 00       		.byte	0
+ 1851 008b 00       		.byte	0
+ 1852 008c 0D       		.uleb128 0xd
+ 1853 008d 13       		.uleb128 0x13
+ 1854 008e 01       		.byte	0x1
+ 1855 008f 0B       		.uleb128 0xb
+ 1856 0090 0B       		.uleb128 0xb
+ 1857 0091 3A       		.uleb128 0x3a
+ 1858 0092 0B       		.uleb128 0xb
+ 1859 0093 3B       		.uleb128 0x3b
+ 1860 0094 05       		.uleb128 0x5
+ 1861 0095 01       		.uleb128 0x1
+ 1862 0096 13       		.uleb128 0x13
+ 1863 0097 00       		.byte	0
+ 1864 0098 00       		.byte	0
+ 1865 0099 0E       		.uleb128 0xe
+ 1866 009a 0D       		.uleb128 0xd
+ 1867 009b 00       		.byte	0
+ 1868 009c 03       		.uleb128 0x3
+ 1869 009d 0E       		.uleb128 0xe
+ 1870 009e 3A       		.uleb128 0x3a
+ 1871 009f 0B       		.uleb128 0xb
+ 1872 00a0 3B       		.uleb128 0x3b
+ 1873 00a1 05       		.uleb128 0x5
+ 1874 00a2 49       		.uleb128 0x49
+ 1875 00a3 13       		.uleb128 0x13
+ 1876 00a4 38       		.uleb128 0x38
+ 1877 00a5 0B       		.uleb128 0xb
+ 1878 00a6 00       		.byte	0
+ 1879 00a7 00       		.byte	0
+ 1880 00a8 0F       		.uleb128 0xf
+ 1881 00a9 0D       		.uleb128 0xd
+ 1882 00aa 00       		.byte	0
+ 1883 00ab 03       		.uleb128 0x3
+ 1884 00ac 08       		.uleb128 0x8
+ 1885 00ad 3A       		.uleb128 0x3a
+ 1886 00ae 0B       		.uleb128 0xb
+ 1887 00af 3B       		.uleb128 0x3b
+ 1888 00b0 05       		.uleb128 0x5
+ 1889 00b1 49       		.uleb128 0x49
+ 1890 00b2 13       		.uleb128 0x13
+ 1891 00b3 38       		.uleb128 0x38
+ 1892 00b4 0B       		.uleb128 0xb
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 41
+
+
+ 1893 00b5 00       		.byte	0
+ 1894 00b6 00       		.byte	0
+ 1895 00b7 10       		.uleb128 0x10
+ 1896 00b8 04       		.uleb128 0x4
+ 1897 00b9 01       		.byte	0x1
+ 1898 00ba 03       		.uleb128 0x3
+ 1899 00bb 0E       		.uleb128 0xe
+ 1900 00bc 0B       		.uleb128 0xb
+ 1901 00bd 0B       		.uleb128 0xb
+ 1902 00be 49       		.uleb128 0x49
+ 1903 00bf 13       		.uleb128 0x13
+ 1904 00c0 3A       		.uleb128 0x3a
+ 1905 00c1 0B       		.uleb128 0xb
+ 1906 00c2 3B       		.uleb128 0x3b
+ 1907 00c3 0B       		.uleb128 0xb
+ 1908 00c4 01       		.uleb128 0x1
+ 1909 00c5 13       		.uleb128 0x13
+ 1910 00c6 00       		.byte	0
+ 1911 00c7 00       		.byte	0
+ 1912 00c8 11       		.uleb128 0x11
+ 1913 00c9 2E       		.uleb128 0x2e
+ 1914 00ca 01       		.byte	0x1
+ 1915 00cb 3F       		.uleb128 0x3f
+ 1916 00cc 19       		.uleb128 0x19
+ 1917 00cd 03       		.uleb128 0x3
+ 1918 00ce 0E       		.uleb128 0xe
+ 1919 00cf 3A       		.uleb128 0x3a
+ 1920 00d0 0B       		.uleb128 0xb
+ 1921 00d1 3B       		.uleb128 0x3b
+ 1922 00d2 0B       		.uleb128 0xb
+ 1923 00d3 11       		.uleb128 0x11
+ 1924 00d4 01       		.uleb128 0x1
+ 1925 00d5 12       		.uleb128 0x12
+ 1926 00d6 06       		.uleb128 0x6
+ 1927 00d7 40       		.uleb128 0x40
+ 1928 00d8 18       		.uleb128 0x18
+ 1929 00d9 9642     		.uleb128 0x2116
+ 1930 00db 19       		.uleb128 0x19
+ 1931 00dc 01       		.uleb128 0x1
+ 1932 00dd 13       		.uleb128 0x13
+ 1933 00de 00       		.byte	0
+ 1934 00df 00       		.byte	0
+ 1935 00e0 12       		.uleb128 0x12
+ 1936 00e1 34       		.uleb128 0x34
+ 1937 00e2 00       		.byte	0
+ 1938 00e3 03       		.uleb128 0x3
+ 1939 00e4 0E       		.uleb128 0xe
+ 1940 00e5 3A       		.uleb128 0x3a
+ 1941 00e6 0B       		.uleb128 0xb
+ 1942 00e7 3B       		.uleb128 0x3b
+ 1943 00e8 0B       		.uleb128 0xb
+ 1944 00e9 49       		.uleb128 0x49
+ 1945 00ea 13       		.uleb128 0x13
+ 1946 00eb 02       		.uleb128 0x2
+ 1947 00ec 18       		.uleb128 0x18
+ 1948 00ed 00       		.byte	0
+ 1949 00ee 00       		.byte	0
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 42
+
+
+ 1950 00ef 13       		.uleb128 0x13
+ 1951 00f0 2E       		.uleb128 0x2e
+ 1952 00f1 01       		.byte	0x1
+ 1953 00f2 3F       		.uleb128 0x3f
+ 1954 00f3 19       		.uleb128 0x19
+ 1955 00f4 03       		.uleb128 0x3
+ 1956 00f5 0E       		.uleb128 0xe
+ 1957 00f6 3A       		.uleb128 0x3a
+ 1958 00f7 0B       		.uleb128 0xb
+ 1959 00f8 3B       		.uleb128 0x3b
+ 1960 00f9 0B       		.uleb128 0xb
+ 1961 00fa 27       		.uleb128 0x27
+ 1962 00fb 19       		.uleb128 0x19
+ 1963 00fc 11       		.uleb128 0x11
+ 1964 00fd 01       		.uleb128 0x1
+ 1965 00fe 12       		.uleb128 0x12
+ 1966 00ff 06       		.uleb128 0x6
+ 1967 0100 40       		.uleb128 0x40
+ 1968 0101 18       		.uleb128 0x18
+ 1969 0102 9642     		.uleb128 0x2116
+ 1970 0104 19       		.uleb128 0x19
+ 1971 0105 01       		.uleb128 0x1
+ 1972 0106 13       		.uleb128 0x13
+ 1973 0107 00       		.byte	0
+ 1974 0108 00       		.byte	0
+ 1975 0109 14       		.uleb128 0x14
+ 1976 010a 05       		.uleb128 0x5
+ 1977 010b 00       		.byte	0
+ 1978 010c 03       		.uleb128 0x3
+ 1979 010d 08       		.uleb128 0x8
+ 1980 010e 3A       		.uleb128 0x3a
+ 1981 010f 0B       		.uleb128 0xb
+ 1982 0110 3B       		.uleb128 0x3b
+ 1983 0111 0B       		.uleb128 0xb
+ 1984 0112 49       		.uleb128 0x49
+ 1985 0113 13       		.uleb128 0x13
+ 1986 0114 02       		.uleb128 0x2
+ 1987 0115 18       		.uleb128 0x18
+ 1988 0116 00       		.byte	0
+ 1989 0117 00       		.byte	0
+ 1990 0118 15       		.uleb128 0x15
+ 1991 0119 05       		.uleb128 0x5
+ 1992 011a 00       		.byte	0
+ 1993 011b 03       		.uleb128 0x3
+ 1994 011c 0E       		.uleb128 0xe
+ 1995 011d 3A       		.uleb128 0x3a
+ 1996 011e 0B       		.uleb128 0xb
+ 1997 011f 3B       		.uleb128 0x3b
+ 1998 0120 0B       		.uleb128 0xb
+ 1999 0121 49       		.uleb128 0x49
+ 2000 0122 13       		.uleb128 0x13
+ 2001 0123 02       		.uleb128 0x2
+ 2002 0124 18       		.uleb128 0x18
+ 2003 0125 00       		.byte	0
+ 2004 0126 00       		.byte	0
+ 2005 0127 16       		.uleb128 0x16
+ 2006 0128 34       		.uleb128 0x34
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 43
+
+
+ 2007 0129 00       		.byte	0
+ 2008 012a 03       		.uleb128 0x3
+ 2009 012b 08       		.uleb128 0x8
+ 2010 012c 3A       		.uleb128 0x3a
+ 2011 012d 0B       		.uleb128 0xb
+ 2012 012e 3B       		.uleb128 0x3b
+ 2013 012f 0B       		.uleb128 0xb
+ 2014 0130 49       		.uleb128 0x49
+ 2015 0131 13       		.uleb128 0x13
+ 2016 0132 02       		.uleb128 0x2
+ 2017 0133 18       		.uleb128 0x18
+ 2018 0134 00       		.byte	0
+ 2019 0135 00       		.byte	0
+ 2020 0136 17       		.uleb128 0x17
+ 2021 0137 2E       		.uleb128 0x2e
+ 2022 0138 00       		.byte	0
+ 2023 0139 3F       		.uleb128 0x3f
+ 2024 013a 19       		.uleb128 0x19
+ 2025 013b 03       		.uleb128 0x3
+ 2026 013c 0E       		.uleb128 0xe
+ 2027 013d 3A       		.uleb128 0x3a
+ 2028 013e 0B       		.uleb128 0xb
+ 2029 013f 3B       		.uleb128 0x3b
+ 2030 0140 0B       		.uleb128 0xb
+ 2031 0141 27       		.uleb128 0x27
+ 2032 0142 19       		.uleb128 0x19
+ 2033 0143 11       		.uleb128 0x11
+ 2034 0144 01       		.uleb128 0x1
+ 2035 0145 12       		.uleb128 0x12
+ 2036 0146 06       		.uleb128 0x6
+ 2037 0147 40       		.uleb128 0x40
+ 2038 0148 18       		.uleb128 0x18
+ 2039 0149 9642     		.uleb128 0x2116
+ 2040 014b 19       		.uleb128 0x19
+ 2041 014c 00       		.byte	0
+ 2042 014d 00       		.byte	0
+ 2043 014e 18       		.uleb128 0x18
+ 2044 014f 2E       		.uleb128 0x2e
+ 2045 0150 00       		.byte	0
+ 2046 0151 3F       		.uleb128 0x3f
+ 2047 0152 19       		.uleb128 0x19
+ 2048 0153 03       		.uleb128 0x3
+ 2049 0154 0E       		.uleb128 0xe
+ 2050 0155 3A       		.uleb128 0x3a
+ 2051 0156 0B       		.uleb128 0xb
+ 2052 0157 3B       		.uleb128 0x3b
+ 2053 0158 0B       		.uleb128 0xb
+ 2054 0159 49       		.uleb128 0x49
+ 2055 015a 13       		.uleb128 0x13
+ 2056 015b 11       		.uleb128 0x11
+ 2057 015c 01       		.uleb128 0x1
+ 2058 015d 12       		.uleb128 0x12
+ 2059 015e 06       		.uleb128 0x6
+ 2060 015f 40       		.uleb128 0x40
+ 2061 0160 18       		.uleb128 0x18
+ 2062 0161 9642     		.uleb128 0x2116
+ 2063 0163 19       		.uleb128 0x19
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 44
+
+
+ 2064 0164 00       		.byte	0
+ 2065 0165 00       		.byte	0
+ 2066 0166 19       		.uleb128 0x19
+ 2067 0167 2E       		.uleb128 0x2e
+ 2068 0168 00       		.byte	0
+ 2069 0169 3F       		.uleb128 0x3f
+ 2070 016a 19       		.uleb128 0x19
+ 2071 016b 03       		.uleb128 0x3
+ 2072 016c 0E       		.uleb128 0xe
+ 2073 016d 3A       		.uleb128 0x3a
+ 2074 016e 0B       		.uleb128 0xb
+ 2075 016f 3B       		.uleb128 0x3b
+ 2076 0170 05       		.uleb128 0x5
+ 2077 0171 27       		.uleb128 0x27
+ 2078 0172 19       		.uleb128 0x19
+ 2079 0173 11       		.uleb128 0x11
+ 2080 0174 01       		.uleb128 0x1
+ 2081 0175 12       		.uleb128 0x12
+ 2082 0176 06       		.uleb128 0x6
+ 2083 0177 40       		.uleb128 0x40
+ 2084 0178 18       		.uleb128 0x18
+ 2085 0179 9642     		.uleb128 0x2116
+ 2086 017b 19       		.uleb128 0x19
+ 2087 017c 00       		.byte	0
+ 2088 017d 00       		.byte	0
+ 2089 017e 1A       		.uleb128 0x1a
+ 2090 017f 2E       		.uleb128 0x2e
+ 2091 0180 01       		.byte	0x1
+ 2092 0181 3F       		.uleb128 0x3f
+ 2093 0182 19       		.uleb128 0x19
+ 2094 0183 03       		.uleb128 0x3
+ 2095 0184 0E       		.uleb128 0xe
+ 2096 0185 3A       		.uleb128 0x3a
+ 2097 0186 0B       		.uleb128 0xb
+ 2098 0187 3B       		.uleb128 0x3b
+ 2099 0188 05       		.uleb128 0x5
+ 2100 0189 27       		.uleb128 0x27
+ 2101 018a 19       		.uleb128 0x19
+ 2102 018b 11       		.uleb128 0x11
+ 2103 018c 01       		.uleb128 0x1
+ 2104 018d 12       		.uleb128 0x12
+ 2105 018e 06       		.uleb128 0x6
+ 2106 018f 40       		.uleb128 0x40
+ 2107 0190 18       		.uleb128 0x18
+ 2108 0191 9642     		.uleb128 0x2116
+ 2109 0193 19       		.uleb128 0x19
+ 2110 0194 01       		.uleb128 0x1
+ 2111 0195 13       		.uleb128 0x13
+ 2112 0196 00       		.byte	0
+ 2113 0197 00       		.byte	0
+ 2114 0198 1B       		.uleb128 0x1b
+ 2115 0199 05       		.uleb128 0x5
+ 2116 019a 00       		.byte	0
+ 2117 019b 03       		.uleb128 0x3
+ 2118 019c 0E       		.uleb128 0xe
+ 2119 019d 3A       		.uleb128 0x3a
+ 2120 019e 0B       		.uleb128 0xb
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 45
+
+
+ 2121 019f 3B       		.uleb128 0x3b
+ 2122 01a0 05       		.uleb128 0x5
+ 2123 01a1 49       		.uleb128 0x49
+ 2124 01a2 13       		.uleb128 0x13
+ 2125 01a3 02       		.uleb128 0x2
+ 2126 01a4 18       		.uleb128 0x18
+ 2127 01a5 00       		.byte	0
+ 2128 01a6 00       		.byte	0
+ 2129 01a7 1C       		.uleb128 0x1c
+ 2130 01a8 05       		.uleb128 0x5
+ 2131 01a9 00       		.byte	0
+ 2132 01aa 03       		.uleb128 0x3
+ 2133 01ab 08       		.uleb128 0x8
+ 2134 01ac 3A       		.uleb128 0x3a
+ 2135 01ad 0B       		.uleb128 0xb
+ 2136 01ae 3B       		.uleb128 0x3b
+ 2137 01af 05       		.uleb128 0x5
+ 2138 01b0 49       		.uleb128 0x49
+ 2139 01b1 13       		.uleb128 0x13
+ 2140 01b2 02       		.uleb128 0x2
+ 2141 01b3 18       		.uleb128 0x18
+ 2142 01b4 00       		.byte	0
+ 2143 01b5 00       		.byte	0
+ 2144 01b6 1D       		.uleb128 0x1d
+ 2145 01b7 34       		.uleb128 0x34
+ 2146 01b8 00       		.byte	0
+ 2147 01b9 03       		.uleb128 0x3
+ 2148 01ba 0E       		.uleb128 0xe
+ 2149 01bb 3A       		.uleb128 0x3a
+ 2150 01bc 0B       		.uleb128 0xb
+ 2151 01bd 3B       		.uleb128 0x3b
+ 2152 01be 05       		.uleb128 0x5
+ 2153 01bf 49       		.uleb128 0x49
+ 2154 01c0 13       		.uleb128 0x13
+ 2155 01c1 02       		.uleb128 0x2
+ 2156 01c2 18       		.uleb128 0x18
+ 2157 01c3 00       		.byte	0
+ 2158 01c4 00       		.byte	0
+ 2159 01c5 1E       		.uleb128 0x1e
+ 2160 01c6 34       		.uleb128 0x34
+ 2161 01c7 00       		.byte	0
+ 2162 01c8 03       		.uleb128 0x3
+ 2163 01c9 0E       		.uleb128 0xe
+ 2164 01ca 3A       		.uleb128 0x3a
+ 2165 01cb 0B       		.uleb128 0xb
+ 2166 01cc 3B       		.uleb128 0x3b
+ 2167 01cd 05       		.uleb128 0x5
+ 2168 01ce 49       		.uleb128 0x49
+ 2169 01cf 13       		.uleb128 0x13
+ 2170 01d0 00       		.byte	0
+ 2171 01d1 00       		.byte	0
+ 2172 01d2 1F       		.uleb128 0x1f
+ 2173 01d3 34       		.uleb128 0x34
+ 2174 01d4 00       		.byte	0
+ 2175 01d5 03       		.uleb128 0x3
+ 2176 01d6 0E       		.uleb128 0xe
+ 2177 01d7 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 46
+
+
+ 2178 01d8 0B       		.uleb128 0xb
+ 2179 01d9 3B       		.uleb128 0x3b
+ 2180 01da 05       		.uleb128 0x5
+ 2181 01db 49       		.uleb128 0x49
+ 2182 01dc 13       		.uleb128 0x13
+ 2183 01dd 3F       		.uleb128 0x3f
+ 2184 01de 19       		.uleb128 0x19
+ 2185 01df 3C       		.uleb128 0x3c
+ 2186 01e0 19       		.uleb128 0x19
+ 2187 01e1 00       		.byte	0
+ 2188 01e2 00       		.byte	0
+ 2189 01e3 20       		.uleb128 0x20
+ 2190 01e4 34       		.uleb128 0x34
+ 2191 01e5 00       		.byte	0
+ 2192 01e6 03       		.uleb128 0x3
+ 2193 01e7 0E       		.uleb128 0xe
+ 2194 01e8 3A       		.uleb128 0x3a
+ 2195 01e9 0B       		.uleb128 0xb
+ 2196 01ea 3B       		.uleb128 0x3b
+ 2197 01eb 0B       		.uleb128 0xb
+ 2198 01ec 49       		.uleb128 0x49
+ 2199 01ed 13       		.uleb128 0x13
+ 2200 01ee 3F       		.uleb128 0x3f
+ 2201 01ef 19       		.uleb128 0x19
+ 2202 01f0 02       		.uleb128 0x2
+ 2203 01f1 18       		.uleb128 0x18
+ 2204 01f2 00       		.byte	0
+ 2205 01f3 00       		.byte	0
+ 2206 01f4 21       		.uleb128 0x21
+ 2207 01f5 34       		.uleb128 0x34
+ 2208 01f6 00       		.byte	0
+ 2209 01f7 03       		.uleb128 0x3
+ 2210 01f8 0E       		.uleb128 0xe
+ 2211 01f9 3A       		.uleb128 0x3a
+ 2212 01fa 0B       		.uleb128 0xb
+ 2213 01fb 3B       		.uleb128 0x3b
+ 2214 01fc 0B       		.uleb128 0xb
+ 2215 01fd 49       		.uleb128 0x49
+ 2216 01fe 13       		.uleb128 0x13
+ 2217 01ff 3F       		.uleb128 0x3f
+ 2218 0200 19       		.uleb128 0x19
+ 2219 0201 3C       		.uleb128 0x3c
+ 2220 0202 19       		.uleb128 0x19
+ 2221 0203 00       		.byte	0
+ 2222 0204 00       		.byte	0
+ 2223 0205 00       		.byte	0
+ 2224              		.section	.debug_aranges,"",%progbits
+ 2225 0000 5C000000 		.4byte	0x5c
+ 2226 0004 0200     		.2byte	0x2
+ 2227 0006 00000000 		.4byte	.Ldebug_info0
+ 2228 000a 04       		.byte	0x4
+ 2229 000b 00       		.byte	0
+ 2230 000c 0000     		.2byte	0
+ 2231 000e 0000     		.2byte	0
+ 2232 0010 00000000 		.4byte	.LFB36
+ 2233 0014 64000000 		.4byte	.LFE36-.LFB36
+ 2234 0018 00000000 		.4byte	.LFB37
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 47
+
+
+ 2235 001c 64000000 		.4byte	.LFE37-.LFB37
+ 2236 0020 00000000 		.4byte	.LFB38
+ 2237 0024 4C000000 		.4byte	.LFE38-.LFB38
+ 2238 0028 00000000 		.4byte	.LFB39
+ 2239 002c 54000000 		.4byte	.LFE39-.LFB39
+ 2240 0030 00000000 		.4byte	.LFB40
+ 2241 0034 18000000 		.4byte	.LFE40-.LFB40
+ 2242 0038 00000000 		.4byte	.LFB42
+ 2243 003c 4C000000 		.4byte	.LFE42-.LFB42
+ 2244 0040 00000000 		.4byte	.LFB43
+ 2245 0044 1A000000 		.4byte	.LFE43-.LFB43
+ 2246 0048 00000000 		.4byte	.LFB44
+ 2247 004c 0C010000 		.4byte	.LFE44-.LFB44
+ 2248 0050 00000000 		.4byte	.LFB45
+ 2249 0054 70000000 		.4byte	.LFE45-.LFB45
+ 2250 0058 00000000 		.4byte	0
+ 2251 005c 00000000 		.4byte	0
+ 2252              		.section	.debug_ranges,"",%progbits
+ 2253              	.Ldebug_ranges0:
+ 2254 0000 00000000 		.4byte	.LFB36
+ 2255 0004 64000000 		.4byte	.LFE36
+ 2256 0008 00000000 		.4byte	.LFB37
+ 2257 000c 64000000 		.4byte	.LFE37
+ 2258 0010 00000000 		.4byte	.LFB38
+ 2259 0014 4C000000 		.4byte	.LFE38
+ 2260 0018 00000000 		.4byte	.LFB39
+ 2261 001c 54000000 		.4byte	.LFE39
+ 2262 0020 00000000 		.4byte	.LFB40
+ 2263 0024 18000000 		.4byte	.LFE40
+ 2264 0028 00000000 		.4byte	.LFB42
+ 2265 002c 4C000000 		.4byte	.LFE42
+ 2266 0030 00000000 		.4byte	.LFB43
+ 2267 0034 1A000000 		.4byte	.LFE43
+ 2268 0038 00000000 		.4byte	.LFB44
+ 2269 003c 0C010000 		.4byte	.LFE44
+ 2270 0040 00000000 		.4byte	.LFB45
+ 2271 0044 70000000 		.4byte	.LFE45
+ 2272 0048 00000000 		.4byte	0
+ 2273 004c 00000000 		.4byte	0
+ 2274              		.section	.debug_line,"",%progbits
+ 2275              	.Ldebug_line0:
+ 2276 0000 DC010000 		.section	.debug_str,"MS",%progbits,1
+ 2276      0200B900 
+ 2276      00000201 
+ 2276      FB0E0D00 
+ 2276      01010101 
+ 2277              	.LASF57:
+ 2278 0000 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BLOB_RSP\000"
+ 2278      455F4556 
+ 2278      545F4741 
+ 2278      5454435F 
+ 2278      52454144 
+ 2279              	.LASF123:
+ 2280 001e 4359424C 		.ascii	"CYBLE_STATE_STOPPED\000"
+ 2280      455F5354 
+ 2280      4154455F 
+ 2280      53544F50 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 48
+
+
+ 2280      50454400 
+ 2281              	.LASF79:
+ 2282 0032 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_READ\000"
+ 2282      455F4556 
+ 2282      545F4C32 
+ 2282      4341505F 
+ 2282      43424643 
+ 2283              	.LASF116:
+ 2284 0051 4359424C 		.ascii	"CYBLE_CONN_HANDLE_T\000"
+ 2284      455F434F 
+ 2284      4E4E5F48 
+ 2284      414E444C 
+ 2284      455F5400 
+ 2285              	.LASF105:
+ 2286 0065 4359424C 		.ascii	"CYBLE_GAPP_DISC_DATA_T\000"
+ 2286      455F4741 
+ 2286      50505F44 
+ 2286      4953435F 
+ 2286      44415441 
+ 2287              	.LASF70:
+ 2288 007c 4359424C 		.ascii	"CYBLE_EVT_GATTS_READ_CHAR_VAL_ACCESS_REQ\000"
+ 2288      455F4556 
+ 2288      545F4741 
+ 2288      5454535F 
+ 2288      52454144 
+ 2289              	.LASF33:
+ 2290 00a5 4359424C 		.ascii	"CYBLE_EVT_GAP_CONNECTION_UPDATE_COMPLETE\000"
+ 2290      455F4556 
+ 2290      545F4741 
+ 2290      505F434F 
+ 2290      4E4E4543 
+ 2291              	.LASF100:
+ 2292 00ce 61647643 		.ascii	"advChannelMap\000"
+ 2292      68616E6E 
+ 2292      656C4D61 
+ 2292      7000
+ 2293              	.LASF78:
+ 2294 00dc 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_CNF\000"
+ 2294      455F4556 
+ 2294      545F4C32 
+ 2294      4341505F 
+ 2294      43424643 
+ 2295              	.LASF153:
+ 2296 00fd 63616C63 		.ascii	"calc_green\000"
+ 2296      5F677265 
+ 2296      656E00
+ 2297              	.LASF89:
+ 2298 0108 4359424C 		.ascii	"CYBLE_GAPP_CONNECTABLE_HIGH_DC_DIRECTED_ADV\000"
+ 2298      455F4741 
+ 2298      50505F43 
+ 2298      4F4E4E45 
+ 2298      43544142 
+ 2299              	.LASF21:
+ 2300 0134 4359424C 		.ascii	"CYBLE_EVT_STACK_BUSY_STATUS\000"
+ 2300      455F4556 
+ 2300      545F5354 
+ 2300      41434B5F 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 49
+
+
+ 2300      42555359 
+ 2301              	.LASF160:
+ 2302 0150 64617461 		.ascii	"dataADVCounter\000"
+ 2302      41445643 
+ 2302      6F756E74 
+ 2302      657200
+ 2303              	.LASF161:
+ 2304 015f 6E65775F 		.ascii	"new_advData\000"
+ 2304      61647644 
+ 2304      61746100 
+ 2305              	.LASF141:
+ 2306 016b 75706461 		.ascii	"updateSpeed\000"
+ 2306      74655370 
+ 2306      65656400 
+ 2307              	.LASF18:
+ 2308 0177 4359424C 		.ascii	"CYBLE_EVT_TIMEOUT\000"
+ 2308      455F4556 
+ 2308      545F5449 
+ 2308      4D454F55 
+ 2308      5400
+ 2309              	.LASF158:
+ 2310 0189 73706565 		.ascii	"speedLeft\000"
+ 2310      644C6566 
+ 2310      7400
+ 2311              	.LASF7:
+ 2312 0193 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2312      206C6F6E 
+ 2312      6720756E 
+ 2312      7369676E 
+ 2312      65642069 
+ 2313              	.LASF118:
+ 2314 01aa 4359424C 		.ascii	"CYBLE_GATT_VALUE_T\000"
+ 2314      455F4741 
+ 2314      54545F56 
+ 2314      414C5545 
+ 2314      5F5400
+ 2315              	.LASF172:
+ 2316 01bd 63616C63 		.ascii	"calc_blue\000"
+ 2316      5F626C75 
+ 2316      6500
+ 2317              	.LASF20:
+ 2318 01c7 4359424C 		.ascii	"CYBLE_EVT_HCI_STATUS\000"
+ 2318      455F4556 
+ 2318      545F4843 
+ 2318      495F5354 
+ 2318      41545553 
+ 2319              	.LASF96:
+ 2320 01dc 61647654 		.ascii	"advType\000"
+ 2320      79706500 
+ 2321              	.LASF83:
+ 2322 01e4 4359424C 		.ascii	"CYBLE_EVT_PENDING_FLASH_WRITE\000"
+ 2322      455F4556 
+ 2322      545F5045 
+ 2322      4E44494E 
+ 2322      475F464C 
+ 2323              	.LASF142:
+ 2324 0202 75706461 		.ascii	"updateRpm\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 50
+
+
+ 2324      74655270 
+ 2324      6D00
+ 2325              	.LASF72:
+ 2326 020c 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_REQ\000"
+ 2326      455F4556 
+ 2326      545F4C32 
+ 2326      4341505F 
+ 2326      434F4E4E 
+ 2327              	.LASF32:
+ 2328 0232 4359424C 		.ascii	"CYBLE_EVT_GAP_ENCRYPT_CHANGE\000"
+ 2328      455F4556 
+ 2328      545F4741 
+ 2328      505F454E 
+ 2328      43525950 
+ 2329              	.LASF140:
+ 2330 024f 74656D70 		.ascii	"tempHandle\000"
+ 2330      48616E64 
+ 2330      6C6500
+ 2331              	.LASF36:
+ 2332 025a 4359424C 		.ascii	"CYBLE_EVT_GAP_NUMERIC_COMPARISON_REQUEST\000"
+ 2332      455F4556 
+ 2332      545F4741 
+ 2332      505F4E55 
+ 2332      4D455249 
+ 2333              	.LASF126:
+ 2334 0283 4359424C 		.ascii	"CYBLE_STATE_ADVERTISING\000"
+ 2334      455F5354 
+ 2334      4154455F 
+ 2334      41445645 
+ 2334      52544953 
+ 2335              	.LASF167:
+ 2336 029b 6D6F746F 		.ascii	"motorFlag\000"
+ 2336      72466C61 
+ 2336      6700
+ 2337              	.LASF0:
+ 2338 02a5 7369676E 		.ascii	"signed char\000"
+ 2338      65642063 
+ 2338      68617200 
+ 2339              	.LASF17:
+ 2340 02b1 4359424C 		.ascii	"CYBLE_EVT_STACK_ON\000"
+ 2340      455F4556 
+ 2340      545F5354 
+ 2340      41434B5F 
+ 2340      4F4E00
+ 2341              	.LASF22:
+ 2342 02c4 4359424C 		.ascii	"CYBLE_EVT_MEMORY_REQUEST\000"
+ 2342      455F4556 
+ 2342      545F4D45 
+ 2342      4D4F5259 
+ 2342      5F524551 
+ 2343              	.LASF164:
+ 2344 02dd 74616368 		.ascii	"tachRightNotify\000"
+ 2344      52696768 
+ 2344      744E6F74 
+ 2344      69667900 
+ 2345              	.LASF34:
+ 2346 02ed 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_START_STOP\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 51
+
+
+ 2346      455F4556 
+ 2346      545F4741 
+ 2346      50435F53 
+ 2346      43414E5F 
+ 2347              	.LASF99:
+ 2348 030c 64697265 		.ascii	"directAddr\000"
+ 2348      63744164 
+ 2348      647200
+ 2349              	.LASF117:
+ 2350 0317 61637475 		.ascii	"actualLen\000"
+ 2350      616C4C65 
+ 2350      6E00
+ 2351              	.LASF24:
+ 2352 0321 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ\000"
+ 2352      455F4556 
+ 2352      545F4741 
+ 2352      505F4155 
+ 2352      54485F52 
+ 2353              	.LASF56:
+ 2354 0338 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_RSP\000"
+ 2354      455F4556 
+ 2354      545F4741 
+ 2354      5454435F 
+ 2354      52454144 
+ 2355              	.LASF166:
+ 2356 0351 74616368 		.ascii	"tachRight\000"
+ 2356      52696768 
+ 2356      7400
+ 2357              	.LASF61:
+ 2358 035b 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_CMD_REQ\000"
+ 2358      455F4556 
+ 2358      545F4741 
+ 2358      5454535F 
+ 2358      57524954 
+ 2359              	.LASF109:
+ 2360 0379 64697363 		.ascii	"discMode\000"
+ 2360      4D6F6465 
+ 2360      00
+ 2361              	.LASF129:
+ 2362 0382 4359424C 		.ascii	"CYBLE_STATE_DISCONNECTED\000"
+ 2362      455F5354 
+ 2362      4154455F 
+ 2362      44495343 
+ 2362      4F4E4E45 
+ 2363              	.LASF29:
+ 2364 039b 4359424C 		.ascii	"CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP\000"
+ 2364      455F4556 
+ 2364      545F4741 
+ 2364      50505F41 
+ 2364      44564552 
+ 2365              	.LASF9:
+ 2366 03c3 75696E74 		.ascii	"uint8\000"
+ 2366      3800
+ 2367              	.LASF106:
+ 2368 03c9 7363616E 		.ascii	"scanRspData\000"
+ 2368      52737044 
+ 2368      61746100 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 52
+
+
+ 2369              	.LASF6:
+ 2370 03d5 6C6F6E67 		.ascii	"long long int\000"
+ 2370      206C6F6E 
+ 2370      6720696E 
+ 2370      7400
+ 2371              	.LASF64:
+ 2372 03e3 4359424C 		.ascii	"CYBLE_EVT_GATTC_EXEC_WRITE_RSP\000"
+ 2372      455F4556 
+ 2372      545F4741 
+ 2372      5454435F 
+ 2372      45584543 
+ 2373              	.LASF12:
+ 2374 0402 646F7562 		.ascii	"double\000"
+ 2374      6C6500
+ 2375              	.LASF134:
+ 2376 0409 4359424C 		.ascii	"CYBLE_SRVI_CUSTOMS_END\000"
+ 2376      455F5352 
+ 2376      56495F43 
+ 2376      5553544F 
+ 2376      4D535F45 
+ 2377              	.LASF127:
+ 2378 0420 4359424C 		.ascii	"CYBLE_STATE_SCANNING\000"
+ 2378      455F5354 
+ 2378      4154455F 
+ 2378      5343414E 
+ 2378      4E494E47 
+ 2379              	.LASF152:
+ 2380 0435 63616C63 		.ascii	"calc_red\000"
+ 2380      5F726564 
+ 2380      00
+ 2381              	.LASF87:
+ 2382 043e 4359424C 		.ascii	"CYBLE_EVT_MAX\000"
+ 2382      455F4556 
+ 2382      545F4D41 
+ 2382      5800
+ 2383              	.LASF114:
+ 2384 044c 62644861 		.ascii	"bdHandle\000"
+ 2384      6E646C65 
+ 2384      00
+ 2385              	.LASF120:
+ 2386 0455 61747472 		.ascii	"attrHandle\000"
+ 2386      48616E64 
+ 2386      6C6500
+ 2387              	.LASF82:
+ 2388 0460 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_WRITE_IND\000"
+ 2388      455F4556 
+ 2388      545F4C32 
+ 2388      4341505F 
+ 2388      43424643 
+ 2389              	.LASF45:
+ 2390 0484 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ_REPLY_ERR\000"
+ 2390      455F4556 
+ 2390      545F4741 
+ 2390      505F4155 
+ 2390      54485F52 
+ 2391              	.LASF90:
+ 2392 04a5 4359424C 		.ascii	"CYBLE_GAPP_SCANNABLE_UNDIRECTED_ADV\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 53
+
+
+ 2392      455F4741 
+ 2392      50505F53 
+ 2392      43414E4E 
+ 2392      41424C45 
+ 2393              	.LASF44:
+ 2394 04c9 4359424C 		.ascii	"CYBLE_EVT_GAP_SCAN_REQ_RECVD\000"
+ 2394      455F4556 
+ 2394      545F4741 
+ 2394      505F5343 
+ 2394      414E5F52 
+ 2395              	.LASF143:
+ 2396 04e6 73776973 		.ascii	"swisr\000"
+ 2396      7200
+ 2397              	.LASF119:
+ 2398 04ec 76616C75 		.ascii	"value\000"
+ 2398      6500
+ 2399              	.LASF69:
+ 2400 04f2 4359424C 		.ascii	"CYBLE_EVT_GATTC_STOP_CMD_COMPLETE\000"
+ 2400      455F4556 
+ 2400      545F4741 
+ 2400      5454435F 
+ 2400      53544F50 
+ 2401              	.LASF8:
+ 2402 0514 756E7369 		.ascii	"unsigned int\000"
+ 2402      676E6564 
+ 2402      20696E74 
+ 2402      00
+ 2403              	.LASF84:
+ 2404 0521 4359424C 		.ascii	"CYBLE_EVT_LE_PING_AUTH_TIMEOUT\000"
+ 2404      455F4556 
+ 2404      545F4C45 
+ 2404      5F50494E 
+ 2404      475F4155 
+ 2405              	.LASF111:
+ 2406 0540 61647654 		.ascii	"advTo\000"
+ 2406      6F00
+ 2407              	.LASF5:
+ 2408 0546 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2408      20756E73 
+ 2408      69676E65 
+ 2408      6420696E 
+ 2408      7400
+ 2409              	.LASF43:
+ 2410 0558 4359424C 		.ascii	"CYBLE_EVT_GAP_CONN_ESTB\000"
+ 2410      455F4556 
+ 2410      545F4741 
+ 2410      505F434F 
+ 2410      4E4E5F45 
+ 2411              	.LASF101:
+ 2412 0570 61647646 		.ascii	"advFilterPolicy\000"
+ 2412      696C7465 
+ 2412      72506F6C 
+ 2412      69637900 
+ 2413              	.LASF59:
+ 2414 0580 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_REQ\000"
+ 2414      455F4556 
+ 2414      545F4741 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 54
+
+
+ 2414      5454535F 
+ 2414      57524954 
+ 2415              	.LASF51:
+ 2416 059a 4359424C 		.ascii	"CYBLE_EVT_GATTC_XCHNG_MTU_RSP\000"
+ 2416      455F4556 
+ 2416      545F4741 
+ 2416      5454435F 
+ 2416      5843484E 
+ 2417              	.LASF68:
+ 2418 05b8 4359424C 		.ascii	"CYBLE_EVT_GATTS_DATA_SIGNED_CMD_REQ\000"
+ 2418      455F4556 
+ 2418      545F4741 
+ 2418      5454535F 
+ 2418      44415441 
+ 2419              	.LASF71:
+ 2420 05dc 4359424C 		.ascii	"CYBLE_EVT_GATTC_LONG_PROCEDURE_END\000"
+ 2420      455F4556 
+ 2420      545F4741 
+ 2420      5454435F 
+ 2420      4C4F4E47 
+ 2421              	.LASF108:
+ 2422 05ff 4359424C 		.ascii	"CYBLE_GAPP_SCAN_RSP_DATA_T\000"
+ 2422      455F4741 
+ 2422      50505F53 
+ 2422      43414E5F 
+ 2422      5253505F 
+ 2423              	.LASF3:
+ 2424 061a 73686F72 		.ascii	"short unsigned int\000"
+ 2424      7420756E 
+ 2424      7369676E 
+ 2424      65642069 
+ 2424      6E7400
+ 2425              	.LASF16:
+ 2426 062d 4359424C 		.ascii	"CYBLE_EVT_HOST_INVALID\000"
+ 2426      455F4556 
+ 2426      545F484F 
+ 2426      53545F49 
+ 2426      4E56414C 
+ 2427              	.LASF54:
+ 2428 0644 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_INFO_RSP\000"
+ 2428      455F4556 
+ 2428      545F4741 
+ 2428      5454435F 
+ 2428      46494E44 
+ 2429              	.LASF149:
+ 2430 0662 73657453 		.ascii	"setSpeed\000"
+ 2430      70656564 
+ 2430      00
+ 2431              	.LASF136:
+ 2432 066b 4C454654 		.ascii	"LEFT\000"
+ 2432      00
+ 2433              	.LASF63:
+ 2434 0670 4359424C 		.ascii	"CYBLE_EVT_GATTS_EXEC_WRITE_REQ\000"
+ 2434      455F4556 
+ 2434      545F4741 
+ 2434      5454535F 
+ 2434      45584543 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 55
+
+
+ 2435              	.LASF25:
+ 2436 068f 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_ENTRY_REQUEST\000"
+ 2436      455F4556 
+ 2436      545F4741 
+ 2436      505F5041 
+ 2436      53534B45 
+ 2437              	.LASF30:
+ 2438 06b3 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_CONNECTED\000"
+ 2438      455F4556 
+ 2438      545F4741 
+ 2438      505F4445 
+ 2438      56494345 
+ 2439              	.LASF170:
+ 2440 06d2 6D61696E 		.ascii	"main.c\000"
+ 2440      2E6300
+ 2441              	.LASF107:
+ 2442 06d9 7363616E 		.ascii	"scanRspDataLen\000"
+ 2442      52737044 
+ 2442      6174614C 
+ 2442      656E00
+ 2443              	.LASF53:
+ 2444 06e8 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_TYPE_RSP\000"
+ 2444      455F4556 
+ 2444      545F4741 
+ 2444      5454435F 
+ 2444      52454144 
+ 2445              	.LASF155:
+ 2446 0709 6379426C 		.ascii	"cyBle_state\000"
+ 2446      655F7374 
+ 2446      61746500 
+ 2447              	.LASF169:
+ 2448 0715 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 2448      43313120 
+ 2448      352E342E 
+ 2448      31203230 
+ 2448      31363036 
+ 2449 0748 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 2449      20726576 
+ 2449      6973696F 
+ 2449      6E203233 
+ 2449      37373135 
+ 2450 077b 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 2450      66756E63 
+ 2450      74696F6E 
+ 2450      2D736563 
+ 2450      74696F6E 
+ 2451              	.LASF48:
+ 2452 07a3 4359424C 		.ascii	"CYBLE_EVT_GATT_CONNECT_IND\000"
+ 2452      455F4556 
+ 2452      545F4741 
+ 2452      54545F43 
+ 2452      4F4E4E45 
+ 2453              	.LASF115:
+ 2454 07be 61747449 		.ascii	"attId\000"
+ 2454      6400
+ 2455              	.LASF74:
+ 2456 07c4 4359424C 		.ascii	"CYBLE_EVT_L2CAP_COMMAND_REJ\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 56
+
+
+ 2456      455F4556 
+ 2456      545F4C32 
+ 2456      4341505F 
+ 2456      434F4D4D 
+ 2457              	.LASF23:
+ 2458 07e0 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_PROGRESS_RESULT\000"
+ 2458      455F4556 
+ 2458      545F4741 
+ 2458      50435F53 
+ 2458      43414E5F 
+ 2459              	.LASF165:
+ 2460 0804 74616368 		.ascii	"tachLeft\000"
+ 2460      4C656674 
+ 2460      00
+ 2461              	.LASF157:
+ 2462 080d 63757272 		.ascii	"current_watchdog_counter\000"
+ 2462      656E745F 
+ 2462      77617463 
+ 2462      68646F67 
+ 2462      5F636F75 
+ 2463              	.LASF46:
+ 2464 0826 4359424C 		.ascii	"CYBLE_EVT_GAP_SMP_LOC_P256_KEYS_GEN_AND_SET_COMPLET"
+ 2464      455F4556 
+ 2464      545F4741 
+ 2464      505F534D 
+ 2464      505F4C4F 
+ 2465 0859 4500     		.ascii	"E\000"
+ 2466              	.LASF75:
+ 2467 085b 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_IND\000"
+ 2467      455F4556 
+ 2467      545F4C32 
+ 2467      4341505F 
+ 2467      43424643 
+ 2468              	.LASF144:
+ 2469 0879 74616368 		.ascii	"tachISR\000"
+ 2469      49535200 
+ 2470              	.LASF154:
+ 2471 0881 6379426C 		.ascii	"cyBle_discoveryModeInfo\000"
+ 2471      655F6469 
+ 2471      73636F76 
+ 2471      6572794D 
+ 2471      6F646549 
+ 2472              	.LASF15:
+ 2473 0899 73697A65 		.ascii	"sizetype\000"
+ 2473      74797065 
+ 2473      00
+ 2474              	.LASF122:
+ 2475 08a2 4359424C 		.ascii	"CYBLE_GATTS_HANDLE_VALUE_NTF_T\000"
+ 2475      455F4741 
+ 2475      5454535F 
+ 2475      48414E44 
+ 2475      4C455F56 
+ 2476              	.LASF124:
+ 2477 08c1 4359424C 		.ascii	"CYBLE_STATE_INITIALIZING\000"
+ 2477      455F5354 
+ 2477      4154455F 
+ 2477      494E4954 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 57
+
+
+ 2477      49414C49 
+ 2478              	.LASF97:
+ 2479 08da 6F776E41 		.ascii	"ownAddrType\000"
+ 2479      64647254 
+ 2479      79706500 
+ 2480              	.LASF28:
+ 2481 08e6 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_FAILED\000"
+ 2481      455F4556 
+ 2481      545F4741 
+ 2481      505F4155 
+ 2481      54485F46 
+ 2482              	.LASF156:
+ 2483 0900 6379426C 		.ascii	"cyBle_connHandle\000"
+ 2483      655F636F 
+ 2483      6E6E4861 
+ 2483      6E646C65 
+ 2483      00
+ 2484              	.LASF60:
+ 2485 0911 4359424C 		.ascii	"CYBLE_EVT_GATTC_WRITE_RSP\000"
+ 2485      455F4556 
+ 2485      545F4741 
+ 2485      5454435F 
+ 2485      57524954 
+ 2486              	.LASF41:
+ 2487 092b 4359424C 		.ascii	"CYBLE_EVT_GAPC_DIRECT_ADV_REPORT\000"
+ 2487      455F4556 
+ 2487      545F4741 
+ 2487      50435F44 
+ 2487      49524543 
+ 2488              	.LASF39:
+ 2489 094c 4359424C 		.ascii	"CYBLE_EVT_GAP_DATA_LENGTH_CHANGE\000"
+ 2489      455F4556 
+ 2489      545F4741 
+ 2489      505F4441 
+ 2489      54415F4C 
+ 2490              	.LASF27:
+ 2491 096d 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_COMPLETE\000"
+ 2491      455F4556 
+ 2491      545F4741 
+ 2491      505F4155 
+ 2491      54485F43 
+ 2492              	.LASF65:
+ 2493 0989 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_NTF\000"
+ 2493      455F4556 
+ 2493      545F4741 
+ 2493      5454435F 
+ 2493      48414E44 
+ 2494              	.LASF133:
+ 2495 09aa 4359424C 		.ascii	"CYBLE_SRVI_CUSTOMS\000"
+ 2495      455F5352 
+ 2495      56495F43 
+ 2495      5553544F 
+ 2495      4D5300
+ 2496              	.LASF121:
+ 2497 09bd 4359424C 		.ascii	"CYBLE_GATT_HANDLE_VALUE_PAIR_T\000"
+ 2497      455F4741 
+ 2497      54545F48 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 58
+
+
+ 2497      414E444C 
+ 2497      455F5641 
+ 2498              	.LASF76:
+ 2499 09dc 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_CNF\000"
+ 2499      455F4556 
+ 2499      545F4C32 
+ 2499      4341505F 
+ 2499      43424643 
+ 2500              	.LASF52:
+ 2501 09fa 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_GROUP_TYPE_RSP\000"
+ 2501      455F4556 
+ 2501      545F4741 
+ 2501      5454435F 
+ 2501      52454144 
+ 2502              	.LASF11:
+ 2503 0a21 666C6F61 		.ascii	"float\000"
+ 2503      7400
+ 2504              	.LASF138:
+ 2505 0a27 6D6F746F 		.ascii	"motor\000"
+ 2505      7200
+ 2506              	.LASF67:
+ 2507 0a2d 4359424C 		.ascii	"CYBLE_EVT_GATTS_HANDLE_VALUE_CNF\000"
+ 2507      455F4556 
+ 2507      545F4741 
+ 2507      5454535F 
+ 2507      48414E44 
+ 2508              	.LASF104:
+ 2509 0a4e 61647644 		.ascii	"advDataLen\000"
+ 2509      6174614C 
+ 2509      656E00
+ 2510              	.LASF98:
+ 2511 0a59 64697265 		.ascii	"directAddrType\000"
+ 2511      63744164 
+ 2511      64725479 
+ 2511      706500
+ 2512              	.LASF159:
+ 2513 0a68 73706565 		.ascii	"speedRight\000"
+ 2513      64526967 
+ 2513      687400
+ 2514              	.LASF1:
+ 2515 0a73 756E7369 		.ascii	"unsigned char\000"
+ 2515      676E6564 
+ 2515      20636861 
+ 2515      7200
+ 2516              	.LASF10:
+ 2517 0a81 75696E74 		.ascii	"uint16\000"
+ 2517      313600
+ 2518              	.LASF37:
+ 2519 0a88 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYPRESS_NOTIFICATION\000"
+ 2519      455F4556 
+ 2519      545F4741 
+ 2519      505F4B45 
+ 2519      59505245 
+ 2520              	.LASF128:
+ 2521 0aac 4359424C 		.ascii	"CYBLE_STATE_CONNECTING\000"
+ 2521      455F5354 
+ 2521      4154455F 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 59
+
+
+ 2521      434F4E4E 
+ 2521      45435449 
+ 2522              	.LASF148:
+ 2523 0ac3 496E6974 		.ascii	"InitializeSystem\000"
+ 2523      69616C69 
+ 2523      7A655379 
+ 2523      7374656D 
+ 2523      00
+ 2524              	.LASF2:
+ 2525 0ad4 73686F72 		.ascii	"short int\000"
+ 2525      7420696E 
+ 2525      7400
+ 2526              	.LASF66:
+ 2527 0ade 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_IND\000"
+ 2527      455F4556 
+ 2527      545F4741 
+ 2527      5454435F 
+ 2527      48414E44 
+ 2528              	.LASF95:
+ 2529 0aff 61647649 		.ascii	"advIntvMax\000"
+ 2529      6E74764D 
+ 2529      617800
+ 2530              	.LASF85:
+ 2531 0b0a 4359424C 		.ascii	"CYBLE_EVT_HCI_PKT\000"
+ 2531      455F4556 
+ 2531      545F4843 
+ 2531      495F504B 
+ 2531      5400
+ 2532              	.LASF163:
+ 2533 0b1c 74616368 		.ascii	"tachLeftNotify\000"
+ 2533      4C656674 
+ 2533      4E6F7469 
+ 2533      667900
+ 2534              	.LASF62:
+ 2535 0b2b 4359424C 		.ascii	"CYBLE_EVT_GATTS_PREP_WRITE_REQ\000"
+ 2535      455F4556 
+ 2535      545F4741 
+ 2535      5454535F 
+ 2535      50524550 
+ 2536              	.LASF94:
+ 2537 0b4a 61647649 		.ascii	"advIntvMin\000"
+ 2537      6E74764D 
+ 2537      696E00
+ 2538              	.LASF92:
+ 2539 0b55 4359424C 		.ascii	"CYBLE_GAPP_CONNECTABLE_LOW_DC_DIRECTED_ADV\000"
+ 2539      455F4741 
+ 2539      50505F43 
+ 2539      4F4E4E45 
+ 2539      43544142 
+ 2540              	.LASF103:
+ 2541 0b80 61647644 		.ascii	"advData\000"
+ 2541      61746100 
+ 2542              	.LASF145:
+ 2543 0b88 68616E64 		.ascii	"handleMotor\000"
+ 2543      6C654D6F 
+ 2543      746F7200 
+ 2544              	.LASF162:
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 60
+
+
+ 2545 0b94 70726F63 		.ascii	"processTachFlag\000"
+ 2545      65737354 
+ 2545      61636846 
+ 2545      6C616700 
+ 2546              	.LASF93:
+ 2547 0ba4 4359424C 		.ascii	"CYBLE_GAPP_ADV_T\000"
+ 2547      455F4741 
+ 2547      50505F41 
+ 2547      44565F54 
+ 2547      00
+ 2548              	.LASF47:
+ 2549 0bb5 4359424C 		.ascii	"CYBLE_EVT_GATTC_ERROR_RSP\000"
+ 2549      455F4556 
+ 2549      545F4741 
+ 2549      5454435F 
+ 2549      4552524F 
+ 2550              	.LASF42:
+ 2551 0bcf 4359424C 		.ascii	"CYBLE_EVT_GAP_SMP_NEGOTIATED_AUTH_INFO\000"
+ 2551      455F4556 
+ 2551      545F4741 
+ 2551      505F534D 
+ 2551      505F4E45 
+ 2552              	.LASF135:
+ 2553 0bf6 4359424C 		.ascii	"CYBLE_SRVI_COUNT\000"
+ 2553      455F5352 
+ 2553      56495F43 
+ 2553      4F554E54 
+ 2553      00
+ 2554              	.LASF131:
+ 2555 0c07 4359424C 		.ascii	"CYBLE_SRVI_GAP\000"
+ 2555      455F5352 
+ 2555      56495F47 
+ 2555      415000
+ 2556              	.LASF137:
+ 2557 0c16 52494748 		.ascii	"RIGHT\000"
+ 2557      5400
+ 2558              	.LASF14:
+ 2559 0c1c 6C6F6E67 		.ascii	"long double\000"
+ 2559      20646F75 
+ 2559      626C6500 
+ 2560              	.LASF13:
+ 2561 0c28 63686172 		.ascii	"char\000"
+ 2561      00
+ 2562              	.LASF58:
+ 2563 0c2d 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_MULTI_RSP\000"
+ 2563      455F4556 
+ 2563      545F4741 
+ 2563      5454435F 
+ 2563      52454144 
+ 2564              	.LASF31:
+ 2565 0c4c 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_DISCONNECTED\000"
+ 2565      455F4556 
+ 2565      545F4741 
+ 2565      505F4445 
+ 2565      56494345 
+ 2566              	.LASF132:
+ 2567 0c6e 4359424C 		.ascii	"CYBLE_SRVI_GATT\000"
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 61
+
+
+ 2567      455F5352 
+ 2567      56495F47 
+ 2567      41545400 
+ 2568              	.LASF168:
+ 2569 0c7e 64697265 		.ascii	"direct\000"
+ 2569      637400
+ 2570              	.LASF80:
+ 2571 0c85 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_RX_CREDIT_IND\000"
+ 2571      455F4556 
+ 2571      545F4C32 
+ 2571      4341505F 
+ 2571      43424643 
+ 2572              	.LASF102:
+ 2573 0ca8 4359424C 		.ascii	"CYBLE_GAPP_DISC_PARAM_T\000"
+ 2573      455F4741 
+ 2573      50505F44 
+ 2573      4953435F 
+ 2573      50415241 
+ 2574              	.LASF81:
+ 2575 0cc0 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_TX_CREDIT_IND\000"
+ 2575      455F4556 
+ 2575      545F4C32 
+ 2575      4341505F 
+ 2575      43424643 
+ 2576              	.LASF26:
+ 2577 0ce3 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_DISPLAY_REQUEST\000"
+ 2577      455F4556 
+ 2577      545F4741 
+ 2577      505F5041 
+ 2577      53534B45 
+ 2578              	.LASF19:
+ 2579 0d09 4359424C 		.ascii	"CYBLE_EVT_HARDWARE_ERROR\000"
+ 2579      455F4556 
+ 2579      545F4841 
+ 2579      52445741 
+ 2579      52455F45 
+ 2580              	.LASF38:
+ 2581 0d22 4359424C 		.ascii	"CYBLE_EVT_GAP_OOB_GENERATED_NOTIFICATION\000"
+ 2581      455F4556 
+ 2581      545F4741 
+ 2581      505F4F4F 
+ 2581      425F4745 
+ 2582              	.LASF151:
+ 2583 0d4b 7267625F 		.ascii	"rgb_led_data\000"
+ 2583      6C65645F 
+ 2583      64617461 
+ 2583      00
+ 2584              	.LASF50:
+ 2585 0d58 4359424C 		.ascii	"CYBLE_EVT_GATTS_XCNHG_MTU_REQ\000"
+ 2585      455F4556 
+ 2585      545F4741 
+ 2585      5454535F 
+ 2585      58434E48 
+ 2586              	.LASF112:
+ 2587 0d76 4359424C 		.ascii	"CYBLE_GAPP_DISC_MODE_INFO_T\000"
+ 2587      455F4741 
+ 2587      50505F44 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 62
+
+
+ 2587      4953435F 
+ 2587      4D4F4445 
+ 2588              	.LASF110:
+ 2589 0d92 61647650 		.ascii	"advParam\000"
+ 2589      6172616D 
+ 2589      00
+ 2590              	.LASF150:
+ 2591 0d9b 55706461 		.ascii	"UpdateRGBled\000"
+ 2591      74655247 
+ 2591      426C6564 
+ 2591      00
+ 2592              	.LASF88:
+ 2593 0da8 4359424C 		.ascii	"CYBLE_GAPP_CONNECTABLE_UNDIRECTED_ADV\000"
+ 2593      455F4741 
+ 2593      50505F43 
+ 2593      4F4E4E45 
+ 2593      43544142 
+ 2594              	.LASF130:
+ 2595 0dce 4359424C 		.ascii	"CYBLE_STATE_T\000"
+ 2595      455F5354 
+ 2595      4154455F 
+ 2595      5400
+ 2596              	.LASF91:
+ 2597 0ddc 4359424C 		.ascii	"CYBLE_GAPP_NON_CONNECTABLE_UNDIRECTED_ADV\000"
+ 2597      455F4741 
+ 2597      50505F4E 
+ 2597      4F4E5F43 
+ 2597      4F4E4E45 
+ 2598              	.LASF125:
+ 2599 0e06 4359424C 		.ascii	"CYBLE_STATE_CONNECTED\000"
+ 2599      455F5354 
+ 2599      4154455F 
+ 2599      434F4E4E 
+ 2599      45435445 
+ 2600              	.LASF139:
+ 2601 0e1c 73706565 		.ascii	"speed\000"
+ 2601      6400
+ 2602              	.LASF55:
+ 2603 0e22 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_BY_TYPE_VALUE_RSP\000"
+ 2603      455F4556 
+ 2603      545F4741 
+ 2603      5454435F 
+ 2603      46494E44 
+ 2604              	.LASF35:
+ 2605 0e49 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYINFO_EXCHNGE_CMPLT\000"
+ 2605      455F4556 
+ 2605      545F4741 
+ 2605      505F4B45 
+ 2605      59494E46 
+ 2606              	.LASF146:
+ 2607 0e6d 6D6F746F 		.ascii	"motorState\000"
+ 2607      72537461 
+ 2607      746500
+ 2608              	.LASF77:
+ 2609 0e78 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_IND\000"
+ 2609      455F4556 
+ 2609      545F4C32 
+ARM GAS  C:\Users\lesia\AppData\Local\Temp\ccD2ZWq7.s 			page 63
+
+
+ 2609      4341505F 
+ 2609      43424643 
+ 2610              	.LASF4:
+ 2611 0e99 6C6F6E67 		.ascii	"long int\000"
+ 2611      20696E74 
+ 2611      00
+ 2612              	.LASF73:
+ 2613 0ea2 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_RSP\000"
+ 2613      455F4556 
+ 2613      545F4C32 
+ 2613      4341505F 
+ 2613      434F4E4E 
+ 2614              	.LASF147:
+ 2615 0ec8 6D61696E 		.ascii	"main\000"
+ 2615      00
+ 2616              	.LASF40:
+ 2617 0ecd 4359424C 		.ascii	"CYBLE_EVT_GAP_ENHANCE_CONN_COMPLETE\000"
+ 2617      455F4556 
+ 2617      545F4741 
+ 2617      505F454E 
+ 2617      48414E43 
+ 2618              	.LASF113:
+ 2619 0ef1 4359424C 		.ascii	"CYBLE_GATT_DB_ATTR_HANDLE_T\000"
+ 2619      455F4741 
+ 2619      54545F44 
+ 2619      425F4154 
+ 2619      54525F48 
+ 2620              	.LASF49:
+ 2621 0f0d 4359424C 		.ascii	"CYBLE_EVT_GATT_DISCONNECT_IND\000"
+ 2621      455F4556 
+ 2621      545F4741 
+ 2621      54545F44 
+ 2621      4953434F 
+ 2622              	.LASF171:
+ 2623 0f2b 453A5C55 		.ascii	"E:\\Users\\lesia\\Desktop\\Mesh_Flood_PSoC4BLE.cyds"
+ 2623      73657273 
+ 2623      5C6C6573 
+ 2623      69615C44 
+ 2623      65736B74 
+ 2624 0f5a 6E00     		.ascii	"n\000"
+ 2625              	.LASF86:
+ 2626 0f5c 4359424C 		.ascii	"CYBLE_EVT_FLASH_CORRUPT\000"
+ 2626      455F4556 
+ 2626      545F464C 
+ 2626      4153485F 
+ 2626      434F5252 
+ 2627              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

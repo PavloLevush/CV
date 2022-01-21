@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+	<div class="" id="studentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+  <div class="modal-dialog" role="document"  style="max-width:700px; ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Додати питання</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+    	<form>
+    	<div class="form-group">
+    	<label>Load XML:</label>
+		<input type="file" name="xml" accept=".xml">
+		</div>
+		<div class="form-group">
+		<label>Питання:</label>
+		<input type="text" name="question" class="w-75">
+		</div>
+		<div class="form-group">
+		<label>Відповідь 1:</label><br>
+		<input type="text" name="answer1">
+		<input type="text" name="formyla1" placeholder="Для вводу формули">
+		<input type="checkbox" name="">
+	</div>
+	<div class="form-group">
+		<label>Відповідь 2:</label><br>
+		<input type="text" name="answer2">
+		<input type="text" name="formyla2" placeholder="Для вводу формули">
+		<input type="checkbox" name="">
+	</div>
+		<div class="form-group">
+		<label>Відповідь 3:</label><br>
+		<input type="text" name="answer3">
+		<input type="text" name="formyla3" placeholder="Для вводу формули">
+		<input type="checkbox" name="">
+	</div>
+	<div class="form-group">
+		<label>Відповідь 4:</label><br>
+		<input type="text" name="answer4">
+		<input type="text" name="formyla4" placeholder="Для вводу формули">
+		<input type="checkbox" name="">
+	</div>
+	</form>
+	<button id="previewbtn" class="btn btn-info">Preview</button>
+<div id="preview" style="display: none">
+  <div class="card-header rounded border-info border pb-2 card-space-gray">
+  <label class="h5">
+    Some questions ??
+  </label>
+  <div class="card-header rounded border-secondary bg-light border">
+	    <form>
+<div class="custom-control custom-radio custom-control-inline w-50 ">
+  <input type="radio" id="customRadioInline1" name="customRadioInline1" class="custom-control-input">
+  <label class="custom-control-label" for="customRadioInline1">Відповідь 1</label>
+</div>
+<div class="custom-control custom-radio custom-control-inline">
+  <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input">
+  <label class="custom-control-label" for="customRadioInline2">Відповідь 2</label>
+</div>
+<div class="custom-control custom-radio custom-control-inline w-50">
+  <input type="radio" id="customRadioInline3" name="customRadioInline1" class="custom-control-input">
+  <label class="custom-control-label" for="customRadioInline3">Відповідь 3</label>
+</div>
+<div class="custom-control custom-radio custom-control-inline">
+  <input type="radio" id="customRadioInline4" name="customRadioInline1" class="custom-control-input">
+  <label class="custom-control-label" for="customRadioInline4">Відповідь 4</label>
+</div>
+</form>
+</div>
+</div>
+      </div>
+      <div class="modal-footer">
+      	<input type="submit" class="btn btn-primary"/>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script type="text/javascript">
+	$('#previewbtn').click(function(event) {
+		$('#preview').show();
+		
+	});
+</script>
+</html>

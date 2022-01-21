@@ -1,0 +1,6 @@
+E:\Users\lesia\Desktop\Mesh_Flood_PSoC4BLE.cydsn\Mesh_Flood_PSoC4BLE.cyprj|0f668b8a-8cdb-440b-a9a3-c53042b8f933
+E:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|4bdc5714-1855-41db-a34f-ce8ba750cc0a
+C:\Users\lesia\OneDrive\Документи\PSoC Creator\4.4\Downloads ( 4.4).cylib\Downloads ( 4.4).cyprj|16fbf515-caec-42e4-908d-6e7f115727c7
+E:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|6d5ec3bd-e686-41ff-b0b6-bf1f5abc3904
+E:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|48471f38-fe40-45b7-a39a-61de57aa25b3
+E:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|1d56d426-5135-4459-9bcf-81115636a479
